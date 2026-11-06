@@ -58,7 +58,6 @@ if (formCadastro) {
     }
   });
 }
-
 if (formLogin) {
   formLogin.addEventListener('submit', async (evento) => {
     evento.preventDefault();
