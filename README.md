@@ -1,71 +1,75 @@
 # Organizador de Receitas
 
 ## Sobre o projeto
-O Organizador de Receitas é uma rede social voltada para pessoas que gostam de cozinhar e compartilhar receitas. A plataforma permite que os usuários cadastrem suas próprias receitas, salvem links de vídeos de culinária e compartilhem suas publicações com outras pessoas.
-
-Os usuários poderão escolher se suas receitas serão públicas ou privadas. Receitas públicas aparecerão no feed, onde outros usuários poderão visualizar, curtir, comentar e salvar como favoritas. Receitas privadas ficarão visíveis somente para o proprietário.
+O Organizador de Receitas ajuda pessoas a guardar receitas próprias, organizar os ingredientes e modo de preparo e encontrar novamente vídeos culinários encontrados em redes sociais.
 
 ## Problema
-Muitas pessoas encontram receitas em vídeos nas redes sociais e depois têm dificuldade para encontrá-los novamente. Além disso, suas receitas próprias ficam espalhadas em cadernos, anotações e outros aplicativos.
-
-## Público-alvo
-Pessoas que gostam de cozinhar, aprender novas receitas, organizar suas preparações e compartilhar ideias culinárias.
+Receitas encontradas em vídeos podem ser difíceis de localizar posteriormente. Além disso, receitas próprias ficam espalhadas entre cadernos, aplicativos e anotações.
 
 ## Solução proposta
-Criar uma plataforma para cadastrar e organizar receitas, salvar vídeos culinários, compartilhar publicações e interagir por meio de curtidas, comentários e favoritos.
+Criar uma plataforma organizada para cadastro de usuários, receitas e vídeos culinários, com acesso individual e controle de diferentes tipos de usuários.
 
-## Funcionalidades
+## Funcionalidades atuais
 
-### Usuários
-- Cadastro e login.
-- Perfis de usuário comum e administrador.
-- Visualização de perfis de outros usuários.
-- Controle de permissões.
+### Frontend
+- Página responsiva de login.
+- Página responsiva de cadastro.
+- Confirmação da senha no cadastro.
+- Validação básica de nome, email e senha.
+- Mensagens de sucesso e erro para o usuário.
+- Consulta dos dados do usuário autenticado.
+- Painel administrativo exibido somente para usuário administrador.
+- Teste visual da área administrativa.
 
-### Receitas
-- Cadastro com nome, descrição, ingredientes e modo de preparo.
-- Foto opcional. Receitas sem foto não terão imagem automática.
-- Categoria principal obrigatória e subcategoria opcional.
-- Privacidade pública ou privada, com alteração posterior.
-- Edição e exclusão somente pelo proprietário.
-- Consulta das receitas cadastradas pelo usuário.
+### Backend
+- Cadastro de usuários.
+- Login com email e senha.
+- Senhas protegidas com bcryptjs.
+- Autenticação com JWT.
+- Rota protegida para consultar os dados do usuário.
+- Rota protegida exclusiva para administradores.
+- Validação de email, nome, senha mínima e campos obrigatórios.
+- Controle dos perfis `comum` e `administrador`.
 
-### Feed e interações
-- Exibição das receitas públicas de todos os usuários.
-- Curtidas, comentários e favoritos.
-- Compartilhamento por link.
-- Receitas privadas não serão exibidas a outros usuários.
+### Banco de dados
+- Banco MySQL `organizar_receitas`.
+- Tabelas de usuários, categorias, subcategorias e receitas.
+- Relacionamentos por chaves estrangeiras.
+- Categorias e subcategorias iniciais.
+- Email de usuário único.
 
-### Vídeos salvos
-- Salvamento de links de vídeos encontrados em outras plataformas.
-- Título e descrição.
-- Categoria principal e subcategoria opcionais.
-- Privacidade pública ou privada, edição e exclusão pelo proprietário.
+## Funcionalidades planejadas para entregas futuras
+- Cadastro, edição e exclusão de receitas completas.
+- Adição de foto às receitas.
+- Cadastro e organização de links de vídeos.
+- Área separada para receitas e vídeos.
+- Feed de receitas públicas.
+- Curtidas, comentários, favoritos e compartilhamento.
+- Perfis públicos e gerenciamento administrativo completo.
 
-## Categorias e subcategorias
-As mesmas categorias serão usadas em receitas e vídeos:
-
-- **Doces:** bolos, tortas, sobremesas, chocolates e biscoitos.
-- **Salgados:** pratos principais, aperitivos, acompanhamentos, petiscos e saladas.
-- **Bebidas:** sucos, vitaminas, bebidas quentes e drinks.
-- **Massas:** macarrão, pizzas, pães e panquecas.
-- **Outros:** outras preparações.
-
-## Tipos de usuários e permissões
+## Tipos de usuários
 
 ### Usuário comum
-Pode criar conta, gerenciar suas próprias receitas e vídeos, alterar a privacidade das publicações, visualizar perfis públicos e usar curtidas, comentários e favoritos.
+- Criar uma conta.
+- Fazer login.
+- Consultar seus próprios dados.
+- Gerenciar suas receitas e vídeos nas próximas etapas.
 
 ### Administrador
-Pode gerenciar usuários, categorias, subcategorias e conteúdos da plataforma, conforme o sistema de permissões.
+- Realizar todas as ações do usuário comum.
+- Acessar a rota administrativa protegida.
+- Gerenciar recursos da plataforma nas próximas etapas.
 
-## Fluxo básico
-1. O usuário cria uma conta ou faz login.
-2. Acessa o feed de receitas públicas.
-3. Visualiza, curta, comenta, compartilha ou favorita publicações.
-4. Cadastra uma receita própria e informa categoria, privacidade, ingredientes e modo de preparo.
-5. Salva vídeos culinários em sua área pessoal.
-6. O usuário acessa seus próprios conteúdos, favoritos e perfil.
+## Tecnologias
+- HTML5.
+- CSS responsivo.
+- JavaScript.
+- Node.js.
+- Express.
+- MySQL.
+- Fetch API.
+- JWT.
+- bcryptjs.
 
 ## Estrutura do projeto
 ```text
@@ -75,151 +79,144 @@ Organizar_Receitas/
 │   ├── controllers/
 │   ├── middlewares/
 │   ├── database/
-│   └── config/
+│   └── server.js
 ├── frontend/
 │   ├── index.html
-│   ├── css/
-│   └── js/
+│   ├── cadastro.html
+│   ├── css/style.css
+│   └── js/script.js
 ├── sql/
-├── README.md
+│   └── banco.sql
+├── package.json
+├── .env.example
 └── .gitignore
 ```
 
-## Tecnologias
-- HTML para a estrutura das páginas.
-- CSS para a interface responsiva.
-- JavaScript para interações no frontend.
-- Node.js e Express para o backend.
-- MySQL para o banco de dados.
-- Fetch API para comunicação com a API.
-- JWT para autenticação nas entregas seguintes.
+## Configuração
 
-## Banco de dados
-Execute o arquivo `sql/banco.sql` em uma conexão MySQL. Ele cria o banco `organizar_receitas`, as tabelas relacionadas, as categorias e as subcategorias iniciais.
-
-## Como testar
-
-### Pré-requisitos
-Antes de executar o projeto, instale:
-
-- [Node.js](https://nodejs.org/) — necessário para executar o backend.
-- MySQL — necessário para criar e acessar o banco de dados.
-- Express — biblioteca do Node.js utilizada para criar o servidor e suas rotas.
-- mysql2 — biblioteca utilizada pelo Node.js para se conectar ao MySQL.
-
-Dentro da pasta `Organizar_Receitas/backend`, instale o Express e o mysql2 com os comandos:
-
-```bash
-npm install express
-npm install mysql2
-```
-
-### Testando o frontend
-1. Entre na pasta `Organizar_Receitas/frontend`.
-2. Abra `index.html` diretamente no navegador ou utilize o Live Server do VS Code.
-3. Verifique o feed, as áreas principais, os filtros e os formulários de protótipo.
-
-## Arquivos iniciais
-- `frontend/index.html`: estrutura das áreas da rede social.
-- `frontend/css/style.css`: aparência visual e responsividade.
-- `frontend/js/script.js`: comportamento simples de navegação e filtro.
-- `backend/*`: pastas reservadas para API, regras de negócio, segurança e banco nas próximas entregas.
-- `sql/`: scripts de criação das tabelas e categorias iniciais.
-
-## Entrega 2 - Banco de dados e autenticação
-
-Esta etapa implementa o banco MySQL relacionado, cadastro, login, proteção de senhas com bcryptjs, autenticação JWT e controle inicial de acesso por perfil.
-
-### Banco de dados
-- Banco: `organizar_receitas`.
-- Tabelas principais: `usuarios`, `categorias`, `subcategorias` e `receitas`.
-- O email dos usuários é único.
-- Perfis disponíveis: `comum` e `administrador`.
-- A receita pertence a um usuário e possui categoria obrigatória e subcategoria opcional.
-
-### Instalação
+### 1. Instalar dependências
 Na pasta `Organizar_Receitas`, execute:
 
 ```bash
 npm install
+```
+
+### 2. Criar o banco
+Execute o arquivo `sql/banco.sql` pelo MySQL Workbench ou pelo terminal MySQL.
+
+### 3. Configurar variáveis
+Copie o arquivo de exemplo e preencha os dados locais:
+
+```bash
 copy .env.example .env
 ```
 
-Preencha o arquivo `.env`. Use uma chave longa e aleatória em `JWT_SECRET`. Nunca envie o arquivo `.env` ao repositório.
+Configure `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` e `JWT_SECRET`.
+Não coloque senhas reais ou o arquivo `.env` em um repositório público.
 
-### Configuração do MySQL
-1. Abra o MySQL Workbench ou o terminal do MySQL.
-2. Execute o arquivo `sql/banco.sql`.
-3. Confirme que o banco `organizar_receitas`, suas tabelas e categorias foram criados.
-
-### Executando
+### 4. Iniciar o servidor
 Na pasta `Organizar_Receitas`, execute:
 
 ```bash
 npm start
 ```
 
-Acesse `http://localhost:3000`. Para testar a conexão com o banco: `http://localhost:3000/api/health`.
+Acesse:
 
-### API de autenticação
+```text
+http://localhost:3000
+```
 
-**Cadastro:**
+## API atual
 
+### Cadastro
 ```text
 POST /api/usuarios/cadastrar
-Content-Type: application/json
-
-{"nome":"Maria","email":"maria@email.com","senha":"123456"}
 ```
 
-O perfil é sempre criado como `comum`, mesmo que outro perfil seja enviado no formulário ou JSON.
+```json
+{
+  "nome": "Maria Silva",
+  "email": "maria@email.com",
+  "senha": "123456"
+}
+```
 
-**Login:**
+O cadastro público sempre cria o usuário com o perfil `comum`.
 
+### Login
 ```text
 POST /api/usuarios/login
-Content-Type: application/json
-
-{"email":"maria@email.com","senha":"123456"}
 ```
 
-A resposta contém o usuário e o token JWT. Utilize o valor de `token` no cabeçalho das rotas protegidas:
+```json
+{
+  "email": "maria@email.com",
+  "senha": "123456"
+}
+```
+
+A resposta inclui um token JWT. Nas rotas protegidas, envie:
 
 ```text
-Authorization: Bearer COLE_O_TOKEN_AQUI
+Authorization: Bearer SEU_TOKEN
 ```
 
-**Rotas protegidas:**
+### Dados do usuário
+```text
+GET /api/usuarios/eu
+```
 
-- `GET /api/usuarios/eu`: dados do usuário autenticado.
-- `GET /api/usuarios/admin`: disponível apenas para usuários com perfil `administrador`.
+Requer um usuário autenticado.
 
-### Criando um administrador de forma segura
-Não escolha o perfil administrador no cadastro público. Para criar o primeiro administrador, cadastre normalmente o usuário pelo sistema e, depois, altere apenas esse registro diretamente no MySQL com o comando:
+### Área administrativa
+```text
+GET /api/usuarios/admin
+```
+
+Requer autenticação e perfil `administrador`.
+
+## Criar usuário administrador
+As contas criadas pelo cadastro público são comuns. Para testar o administrador, cadastre uma conta normalmente e execute no MySQL:
 
 ```sql
 USE organizar_receitas;
-UPDATE usuarios SET nivel = 'administrador'
+
+UPDATE usuarios
+SET nivel = 'administrador'
 WHERE email = 'email_do_administrador@email.com';
 ```
 
-Faça o login novamente para obter um novo token com o perfil atualizado.
+Faça login novamente para obter um novo token com o perfil atualizado.
 
-### Testes com Thunder Client
-1. Execute o arquivo SQL e inicie o servidor.
-2. Envie o cadastro por `POST` para `/api/usuarios/cadastrar`.
-3. Envie o login por `POST` para `/api/usuarios/login` e copie o token.
-4. Acesse `/api/usuarios/eu` sem token: esperado status `401`.
-5. Repita com `Authorization: Bearer <token>`: esperado status `200`.
-6. Acesse `/api/usuarios/admin` com usuário comum: esperado status `403`.
-7. Faça login com o administrador criado e repita a rota: esperado status `200`.
-8. Teste um JWT inválido ou expirado para confirmar o erro `401`.
+Também existe esta conta de teste, caso tenha sido criada no banco:
 
-## Segurança implementada
+```text
+Email: admin@receitas.com
+Senha: Admin123
+```
+
+## Como testar
+1. Execute `sql/banco.sql`.
+2. Configure o arquivo `.env`.
+3. Execute `npm start`.
+4. Cadastre um usuário em `http://localhost:3000/cadastro.html`.
+5. Faça login em `http://localhost:3000`.
+6. Teste a consulta dos próprios dados.
+7. Promova uma conta para administrador pelo MySQL.
+8. Faça login novamente e teste a área administrativa.
+
+### Validação esperada
+- Sem token em `/api/usuarios/eu`: status `401`.
+- Token válido em `/api/usuarios/eu`: status `200`.
+- Usuário comum em `/api/usuarios/admin`: status `403`.
+- Administrador em `/api/usuarios/admin`: status `200`.
+- Senha incorreta: mensagem de email ou senha inválidos.
+
+## Segurança atual
 - Senhas armazenadas com hash bcryptjs.
-- Email único no banco.
-- Hash e senha nunca são devolvidos pela API.
-- Secret do JWT configurado exclusivamente por variável de ambiente.
-- Autenticação pelo formato Bearer.
-- Autorização administrativa verificada no backend.
-- `.env` excluído pelo `.gitignore`.
+- Email de usuário único.
+- Senha e hash não são devolvidos pela API.
+- Token JWT com tempo de validade configurável.
+- Rota administrativa protegida por autenticação e autorização.
+- Dados sensíveis armazenados em arquivo `.env`.
