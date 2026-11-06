@@ -7,30 +7,37 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header></header>
+  <header class="topo-site">
+    <a class="marca" href="index.html" aria-label="Página inicial do Organizador de Receitas">
+      <span class="marca-icone" aria-hidden="true">OR</span>
+      <span>Organizador de Receitas</span>
+    </a>
+  </header>
   <main>
-    <section class="secao" id="conta">
-      <div class="titulo-secao">
-        <div>
-          <p class="subtitulo">Entrega 2</p>
-          <h2>Criar sua conta</h2>
+    <section class="area-conta cadastro" id="conta">
+      <div class="painel-login">
+        <div class="boas-vindas">
+          <p class="subtitulo">Comece agora</p>
+          <h1>Crie seu caderno de receitas.</h1>
+          <p>Guarde as receitas que marcaram sua cozinha e tenha tudo organizado em um só lugar.</p>
         </div>
-      </div>
-      <div class="formulario-conta">
-        <form id="form-cadastro">
-          <h3>Cadastro</h3>
-          <label>Nome<input type="text" id="cadastro-nome" required maxlength="100" autocomplete="name"></label>
-          <label>Email<input type="email" id="cadastro-email" required maxlength="150" autocomplete="email"></label>
-          <label>Senha<input type="password" id="cadastro-senha" required minlength="6" autocomplete="new-password"></label>
-          <button type="submit">Cadastrar</button>
-          <p class="troca-formulario">Já possui uma conta?</p>
-          <a class="botao-secundario" href="index.html">Voltar para o login</a>
-          <p id="mensagem-cadastro" role="status"></p>
-        </form>
+        <div class="formulario-conta">
+          <form id="form-cadastro">
+            <h2>Criar sua conta</h2>
+            <label>Nome<input type="text" id="cadastro-nome" required maxlength="100" autocomplete="name" placeholder="Seu nome"></label>
+            <label>Email<input type="email" id="cadastro-email" required maxlength="150" autocomplete="email" placeholder="seuemail@email.com"></label>
+            <label>Senha<input type="password" id="cadastro-senha" required minlength="6" autocomplete="new-password" placeholder="Mínimo de 6 caracteres"></label>
+            <label>Confirmar senha<input type="password" id="cadastro-confirmar-senha" required minlength="6" autocomplete="new-password" placeholder="Digite a senha novamente"></label>
+            <button type="submit">Cadastrar</button>
+            <p class="troca-formulario">Já possui uma conta?</p>
+            <a class="botao-secundario" href="index.html">Voltar para o login</a>
+            <p id="mensagem-cadastro" role="status"></p>
+          </form>
+        </div>
+        <aside class="painel-ilustracao" aria-label="Receitas caseiras"></aside>
       </div>
     </section>
   </main>
-  <footer></footer>
 
   <script src="js/script.js"></script>
 </body>

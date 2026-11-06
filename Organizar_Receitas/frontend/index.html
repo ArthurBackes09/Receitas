@@ -7,37 +7,49 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header></header>
+  <header class="topo-site">
+    <a class="marca" href="index.html" aria-label="Página inicial do Organizador de Receitas">
+      <span class="marca-icone" aria-hidden="true">OR</span>
+      <span>Organizador de Receitas</span>
+    </a>
+  </header>
   <main>
-    <section class="secao" id="conta">
-      <div class="titulo-secao">
-        <div>
-          <p class="subtitulo">Entrega 2</p>
-          <h2>Cadastro e login</h2>
+    <section class="area-conta" id="conta">
+      <div class="painel-login">
+        <div class="boas-vindas">
+          <p class="subtitulo">Bem-vindo de volta</p>
+          <h1>Guarde suas receitas favoritas, sempre à mão.</h1>
+          <p>Organize seus sabores, inspire-se no que já fez e volte sempre que quiser cozinhar.</p>
         </div>
-      </div>
-      <div class="formulario-conta">
-        <form id="form-login">
-          <h3>Entrar na sua conta</h3>
-          <label>Email<input type="email" id="login-email" required autocomplete="email"></label>
-          <label>Senha<input type="password" id="login-senha" required autocomplete="current-password"></label>
-          <button type="submit">Entrar</button>
-          <p class="troca-formulario">Ainda não possui conta?</p>
-          <a class="botao-secundario" href="cadastro.html">Criar uma conta</a>
-          <p id="mensagem-login" role="status"></p>
-        </form>
+        <div class="formulario-conta">
+          <form id="form-login">
+            <h2>Entrar na sua conta</h2>
+            <label>Email<input type="email" id="login-email" required autocomplete="email" placeholder="seuemail@email.com"></label>
+            <label>Senha<input type="password" id="login-senha" required autocomplete="current-password" placeholder="Digite sua senha"></label>
+            <button type="submit">Entrar</button>
+            <p class="troca-formulario">Ainda não possui conta?</p>
+            <a class="botao-secundario" href="cadastro.html">Criar uma conta</a>
+            <p id="mensagem-login" role="status"></p>
+          </form>
+        </div>
+        <aside class="painel-ilustracao" aria-label="Caderno de receitas"></aside>
       </div>
     </section>
 
-    <section class="secao">
+    <section class="area-autenticada">
       <h2>Área autenticada</h2>
       <p id="usuario-conectado">Nenhum usuário conectado.</p>
-      <button type="button" id="botao-usuario">Consultar meus dados</button>
-      <button type="button" id="botao-admin">Testar área administrativa</button>
+      <div class="botoes-area">
+        <button type="button" id="botao-usuario">Consultar meus dados</button>
+      </div>
       <p id="mensagem-protegida" role="status"></p>
+      <section class="painel-administrador" id="painel-admin" hidden>
+        <h3>Área do administrador</h3>
+        <p>Este recurso está disponível somente para usuários administradores.</p>
+        <button type="button" id="botao-admin">Testar acesso administrativo</button>
+      </section>
     </section>
   </main>
-  <footer></footer>
 
   <script src="js/script.js"></script>
 </body>

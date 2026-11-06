@@ -10,11 +10,21 @@ async function cadastrar(req, res) {
       return res.status(400).json({ mensagem: 'Nome, email e senha são obrigatórios.' });
     }
 
-    if (senha.length < 6) {
+    const nomeNormalizado = String(nome).trim();
+    const emailNormalizado = String(email).trim().toLowerCase();
+
+    if (nomeNormalizado.length < 2) {
+      return res.status(400).json({ mensagem: 'O nome deve ter pelo menos 2 caracteres.' });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado)) {
+      return res.status(400).json({ mensagem: 'Informe um email válido.' });
+    }
+
+    if (typeof senha !== 'string' || senha.length < 6) {
       return res.status(400).json({ mensagem: 'A senha deve ter pelo menos 6 caracteres.' });
     }
 
-    const emailNormalizado = String(email).trim().toLowerCase();
     const [usuarios] = await conexao.execute('SELECT id FROM usuarios WHERE email = ?', [emailNormalizado]);
 
     if (usuarios.length > 0) {
@@ -24,12 +34,12 @@ async function cadastrar(req, res) {
     const senhaProtegida = await bcrypt.hash(senha, 10);
     const [resultado] = await conexao.execute(
       'INSERT INTO usuarios (nome, email, senha, nivel) VALUES (?, ?, ?, ?) ',
-      [String(nome).trim(), emailNormalizado, senhaProtegida, 'comum']
+      [nomeNormalizado, emailNormalizado, senhaProtegida, 'comum']
     );
 
     return res.status(201).json({
       mensagem: 'Usuário cadastrado com sucesso.',
-      usuario: { id: resultado.insertId, nome: String(nome).trim(), email: emailNormalizado, nivel: 'comum' }
+      usuario: { id: resultado.insertId, nome: nomeNormalizado, email: emailNormalizado, nivel: 'comum' }
     });
   } catch (erro) {
     console.error('Erro ao cadastrar usuário:', erro);
@@ -46,6 +56,9 @@ async function login(req, res) {
     }
 
     const emailNormalizado = String(email).trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado)) {
+      return res.status(400).json({ mensagem: 'Informe um email válido.' });
+    }
     const [usuarios] = await conexao.execute(
       'SELECT id, nome, email, senha, nivel FROM usuarios WHERE email = ?',
       [emailNormalizado]
