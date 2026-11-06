@@ -127,4 +127,102 @@ npm install mysql2
 - `frontend/css/style.css`: aparência visual e responsividade.
 - `frontend/js/script.js`: comportamento simples de navegação e filtro.
 - `backend/*`: pastas reservadas para API, regras de negócio, segurança e banco nas próximas entregas.
-- `sql/`: espaço reservado para os scripts do banco de dados.
+- `sql/`: scripts de criação das tabelas e categorias iniciais.
+
+## Entrega 2 - Banco de dados e autenticação
+
+Esta etapa implementa o banco MySQL relacionado, cadastro, login, proteção de senhas com bcryptjs, autenticação JWT e controle inicial de acesso por perfil.
+
+### Banco de dados
+- Banco: `organizar_receitas`.
+- Tabelas principais: `usuarios`, `categorias`, `subcategorias` e `receitas`.
+- O email dos usuários é único.
+- Perfis disponíveis: `comum` e `administrador`.
+- A receita pertence a um usuário e possui categoria obrigatória e subcategoria opcional.
+
+### Instalação
+Na pasta `Organizar_Receitas`, execute:
+
+```bash
+npm install
+copy .env.example .env
+```
+
+Preencha o arquivo `.env`. Use uma chave longa e aleatória em `JWT_SECRET`. Nunca envie o arquivo `.env` ao repositório.
+
+### Configuração do MySQL
+1. Abra o MySQL Workbench ou o terminal do MySQL.
+2. Execute o arquivo `sql/banco.sql`.
+3. Confirme que o banco `organizar_receitas`, suas tabelas e categorias foram criados.
+
+### Executando
+Na pasta `Organizar_Receitas`, execute:
+
+```bash
+npm start
+```
+
+Acesse `http://localhost:3000`. Para testar a conexão com o banco: `http://localhost:3000/api/health`.
+
+### API de autenticação
+
+**Cadastro:**
+
+```text
+POST /api/usuarios/cadastrar
+Content-Type: application/json
+
+{"nome":"Maria","email":"maria@email.com","senha":"123456"}
+```
+
+O perfil é sempre criado como `comum`, mesmo que outro perfil seja enviado no formulário ou JSON.
+
+**Login:**
+
+```text
+POST /api/usuarios/login
+Content-Type: application/json
+
+{"email":"maria@email.com","senha":"123456"}
+```
+
+A resposta contém o usuário e o token JWT. Utilize o valor de `token` no cabeçalho das rotas protegidas:
+
+```text
+Authorization: Bearer COLE_O_TOKEN_AQUI
+```
+
+**Rotas protegidas:**
+
+- `GET /api/usuarios/eu`: dados do usuário autenticado.
+- `GET /api/usuarios/admin`: disponível apenas para usuários com perfil `administrador`.
+
+### Criando um administrador de forma segura
+Não escolha o perfil administrador no cadastro público. Para criar o primeiro administrador, cadastre normalmente o usuário pelo sistema e, depois, altere apenas esse registro diretamente no MySQL com o comando:
+
+```sql
+USE organizar_receitas;
+UPDATE usuarios SET nivel = 'administrador'
+WHERE email = 'email_do_administrador@email.com';
+```
+
+Faça o login novamente para obter um novo token com o perfil atualizado.
+
+### Testes com Thunder Client
+1. Execute o arquivo SQL e inicie o servidor.
+2. Envie o cadastro por `POST` para `/api/usuarios/cadastrar`.
+3. Envie o login por `POST` para `/api/usuarios/login` e copie o token.
+4. Acesse `/api/usuarios/eu` sem token: esperado status `401`.
+5. Repita com `Authorization: Bearer <token>`: esperado status `200`.
+6. Acesse `/api/usuarios/admin` com usuário comum: esperado status `403`.
+7. Faça login com o administrador criado e repita a rota: esperado status `200`.
+8. Teste um JWT inválido ou expirado para confirmar o erro `401`.
+
+## Segurança implementada
+- Senhas armazenadas com hash bcryptjs.
+- Email único no banco.
+- Hash e senha nunca são devolvidos pela API.
+- Secret do JWT configurado exclusivamente por variável de ambiente.
+- Autenticação pelo formato Bearer.
+- Autorização administrativa verificada no backend.
+- `.env` excluído pelo `.gitignore`.

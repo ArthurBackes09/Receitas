@@ -3,12 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
+  <title>Organizador de Receitas</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header></header>
-  <main></main>
+  <main>
+    <section class="secao" id="conta">
+      <div class="titulo-secao">
+        <div>
+          <p class="subtitulo">Entrega 2</p>
+          <h2>Cadastro e login</h2>
+        </div>
+      </div>
+      <div class="formulario-conta">
+        <form id="form-login">
+          <h3>Entrar na sua conta</h3>
+          <label>Email<input type="email" id="login-email" required autocomplete="email"></label>
+          <label>Senha<input type="password" id="login-senha" required autocomplete="current-password"></label>
+          <button type="submit">Entrar</button>
+          <p class="troca-formulario">Ainda não possui conta?</p>
+          <a class="botao-secundario" href="cadastro.html">Criar uma conta</a>
+          <p id="mensagem-login" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="secao">
+      <h2>Área autenticada</h2>
+      <p id="usuario-conectado">Nenhum usuário conectado.</p>
+      <button type="button" id="botao-usuario">Consultar meus dados</button>
+      <button type="button" id="botao-admin">Testar área administrativa</button>
+      <p id="mensagem-protegida" role="status"></p>
+    </section>
+  </main>
   <footer></footer>
 
   <script src="js/script.js"></script>

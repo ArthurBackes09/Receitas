@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar conta | Organizador de Receitas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header></header>
+  <main>
+    <section class="secao" id="conta">
+      <div class="titulo-secao">
+        <div>
+          <p class="subtitulo">Entrega 2</p>
+          <h2>Criar sua conta</h2>
+        </div>
+      </div>
+      <div class="formulario-conta">
+        <form id="form-cadastro">
+          <h3>Cadastro</h3>
+          <label>Nome<input type="text" id="cadastro-nome" required maxlength="100" autocomplete="name"></label>
+          <label>Email<input type="email" id="cadastro-email" required maxlength="150" autocomplete="email"></label>
+          <label>Senha<input type="password" id="cadastro-senha" required minlength="6" autocomplete="new-password"></label>
+          <button type="submit">Cadastrar</button>
+          <p class="troca-formulario">Já possui uma conta?</p>
+          <a class="botao-secundario" href="index.html">Voltar para o login</a>
+          <p id="mensagem-cadastro" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer></footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

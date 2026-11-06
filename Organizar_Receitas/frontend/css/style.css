@@ -43,6 +43,13 @@ textarea { min-height: 90px; resize: vertical; }
 .linha-formulario { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 button { padding: 12px; border: 0; border-radius: 8px; color: white; background: var(--verde); font-weight: bold; }
 button:disabled { cursor: not-allowed; opacity: 0.55; }
+.formulario-conta { width: min(480px, 100%); margin: 0 auto; }
+.formulario-conta form { gap: 16px; }
+.formulario-conta h3 { margin: 0 0 4px; color: var(--verde-escuro); text-align: center; }
+.troca-formulario { margin: 8px 0 -8px; color: var(--cinza); text-align: center; }
+.botao-secundario { display: block; padding: 12px; border: 1px solid var(--verde); border-radius: 8px; color: var(--verde); background: white; font-weight: bold; text-align: center; text-decoration: none; }
+.botao-secundario:hover { color: white; background: var(--verde); }
+#mensagem-login, #mensagem-cadastro { min-height: 20px; margin: 0; text-align: center; }
 .categorias { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
 .categorias span { display: grid; gap: 6px; padding: 16px; border-radius: 12px; background: white; border-bottom: 3px solid var(--laranja); }
 .categorias small { color: var(--cinza); line-height: 1.4; }
