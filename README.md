@@ -33,7 +33,8 @@ Criar uma plataforma organizada para cadastro de usuários, receitas e vídeos c
 
 ### Banco de dados
 - Banco MySQL `organizar_receitas`.
-- Tabelas de usuários, categorias, subcategorias e receitas.
+- Tabelas de usuários, categorias, subcategorias, receitas e vídeos salvos.
+- Vídeos salvos possuem autoria, título, descrição, URL e classificação por categoria e subcategoria.
 - Relacionamentos por chaves estrangeiras.
 - Categorias e subcategorias iniciais.
 - Email de usuário único.
@@ -41,7 +42,7 @@ Criar uma plataforma organizada para cadastro de usuários, receitas e vídeos c
 ## Funcionalidades planejadas para entregas futuras
 - Cadastro, edição e exclusão de receitas completas.
 - Adição de foto às receitas.
-- Cadastro e organização de links de vídeos.
+- Cadastro, edição, consulta e exclusão de vídeos salvos pela aplicação. A tabela relacional já está criada.
 - Área separada para receitas e vídeos.
 - Feed de receitas públicas.
 - Curtidas, comentários, favoritos e compartilhamento.
@@ -205,6 +206,7 @@ Senha: Admin123
 6. Teste a consulta dos próprios dados.
 7. Promova uma conta para administrador pelo MySQL.
 8. Faça login novamente e teste a área administrativa.
+9. No MySQL, confirme a tabela de vídeos com `DESCRIBE videos_salvos;`.
 
 ### Validação esperada
 - Sem token em `/api/usuarios/eu`: status `401`.

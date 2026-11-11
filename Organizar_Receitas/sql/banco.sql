@@ -44,6 +44,23 @@ CREATE TABLE IF NOT EXISTS receitas (
         ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS videos_salvos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    categoria_id INT NOT NULL,
+    subcategoria_id INT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    descricao TEXT,
+    url_video VARCHAR(500) NOT NULL,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (subcategoria_id) REFERENCES subcategorias(id)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
 INSERT INTO categorias (nome) VALUES
     ('Doces'), ('Salgados'), ('Bebidas'), ('Massas'), ('Outros')
 ON DUPLICATE KEY UPDATE nome = VALUES(nome);
