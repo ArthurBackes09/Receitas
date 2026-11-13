@@ -18,7 +18,7 @@ const camposConteudoSite = [
   { grupo: 'Início', chave: 'subtitulo', rotulo: 'Subtítulo principal', maximo: 150 },
   { grupo: 'Início', chave: 'titulo', rotulo: 'Título principal', maximo: 100 },
   { grupo: 'Início', chave: 'descricao', rotulo: 'Descrição principal', maximo: 500, tipo: 'textarea' },
-  { grupo: 'Início', chave: 'foto_destaque', rotulo: 'URL ou imagem principal', maximo: 500, tipo: 'text', imagem: true },
+  { grupo: 'Início', chave: 'foto_destaque', rotulo: 'URL da imagem principal', maximo: 500, tipo: 'text' },
   { grupo: 'Início', chave: 'inicio_explorar', rotulo: 'Botão para explorar receitas', maximo: 60 },
   { grupo: 'Início', chave: 'inicio_acessar', rotulo: 'Botão para acessar a conta', maximo: 60 },
   { grupo: 'Início', chave: 'categorias_subtitulo', rotulo: 'Subtítulo das categorias', maximo: 100 },
@@ -30,7 +30,7 @@ const camposConteudoSite = [
   { grupo: 'Início', chave: 'login_descricao', rotulo: 'Descrição do acesso', maximo: 250, tipo: 'textarea' },
   { grupo: 'Início', chave: 'login_cadastro', rotulo: 'Link para cadastro', maximo: 100 },
   { grupo: 'Início', chave: 'login_botao', rotulo: 'Botão de entrar', maximo: 40 },
-  { grupo: 'Cadastro', chave: 'foto_cadastro', rotulo: 'URL ou imagem de cadastro', maximo: 500, tipo: 'text', imagem: true },
+  { grupo: 'Cadastro', chave: 'foto_cadastro', rotulo: 'URL da imagem de cadastro', maximo: 500, tipo: 'text' },
   { grupo: 'Cadastro', chave: 'cadastro_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
   { grupo: 'Cadastro', chave: 'cadastro_titulo', rotulo: 'Título', maximo: 120 },
   { grupo: 'Cadastro', chave: 'cadastro_descricao', rotulo: 'Descrição', maximo: 250, tipo: 'textarea' },
@@ -82,40 +82,12 @@ function imagemParaExibicao(valor) {
 
 function resolverImagemExibicao(valor) {
   if (imagemLocalValida(valor)) return imagemParaExibicao(valor);
-  if (valor.startsWith('blob:')) return valor;
   try {
     const url = new URL(valor);
     return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
   } catch (erro) {
     return null;
   }
-}
-
-function atualizarPreviaImagemConteudo(previa, valor) {
-  previa.replaceChildren();
-  const src = resolverImagemExibicao(valor);
-  if (!src) {
-    previa.hidden = true;
-    return;
-  }
-
-  const imagem = document.createElement('img');
-  imagem.alt = 'Prévia da imagem selecionada';
-  const erro = document.createElement('span');
-  erro.className = 'ajuda-campo';
-  erro.textContent = 'Não foi possível carregar esta imagem. Confira o link ou selecione outro arquivo.';
-  erro.hidden = true;
-  imagem.addEventListener('error', () => {
-    imagem.hidden = true;
-    erro.hidden = false;
-  }, { once: true });
-  imagem.addEventListener('load', () => {
-    imagem.hidden = false;
-    erro.hidden = true;
-  }, { once: true });
-  previa.append(imagem, erro);
-  previa.hidden = false;
-  imagem.src = src;
 }
 
 function textoConfiguravel(chave, padrao) {
@@ -164,14 +136,18 @@ function testarCarregamentoImagem(url) {
     const imagem = new Image();
     imagem.addEventListener('load', () => resolver(true), { once: true });
     imagem.addEventListener('error', () => resolver(false), { once: true });
-    imagem.src = imagemParaExibicao(url);
+    const src = resolverImagemExibicao(url);
+    if (!src) {
+      resolver(false);
+      return;
+    }
+    imagem.src = src;
   });
 }
 
 async function requisitar(url, opcoes = {}) {
   const cabecalhos = { ...(opcoes.headers || {}) };
-  const corpoMultipart = typeof FormData !== 'undefined' && opcoes.body instanceof FormData;
-  if (opcoes.body !== undefined && !corpoMultipart) cabecalhos['Content-Type'] = 'application/json';
+  if (opcoes.body !== undefined) cabecalhos['Content-Type'] = 'application/json';
   if (opcoes.autenticada !== false && tokenAtual()) {
     cabecalhos.Authorization = `Bearer ${tokenAtual()}`;
   }
@@ -179,9 +155,7 @@ async function requisitar(url, opcoes = {}) {
   const resposta = await fetch(`${API_BASE_URL}${url}`, {
     method: opcoes.method || 'GET',
     headers: cabecalhos,
-    body: opcoes.body === undefined
-      ? undefined
-      : (corpoMultipart ? opcoes.body : JSON.stringify(opcoes.body))
+    body: opcoes.body === undefined ? undefined : JSON.stringify(opcoes.body)
   });
   const conteudo = await lerResposta(resposta);
   if (!resposta.ok) {
@@ -190,32 +164,6 @@ async function requisitar(url, opcoes = {}) {
     throw erro;
   }
   return conteudo;
-}
-
-async function enviarImagem(arquivo, rota) {
-  const corpo = new FormData();
-  corpo.append('imagem', arquivo);
-  return requisitar(rota, { method: 'POST', body: corpo });
-}
-
-function inicializarPreviaFotoLocal() {
-  const foto = document.querySelector('#receita-foto');
-  const arquivoFoto = document.querySelector('#receita-arquivo-foto');
-  if (!foto || !arquivoFoto || arquivoFoto.dataset.previaInicializada) return;
-
-  arquivoFoto.dataset.previaInicializada = 'true';
-  foto.addEventListener('input', () => {
-    if (arquivoFoto.dataset.urlPrevia) URL.revokeObjectURL(arquivoFoto.dataset.urlPrevia);
-    delete arquivoFoto.dataset.urlPrevia;
-    atualizarPreviaFoto(foto.value.trim());
-  });
-  arquivoFoto.addEventListener('change', () => {
-    const arquivo = arquivoFoto.files[0];
-    if (!arquivo) return;
-    if (arquivoFoto.dataset.urlPrevia) URL.revokeObjectURL(arquivoFoto.dataset.urlPrevia);
-    arquivoFoto.dataset.urlPrevia = URL.createObjectURL(arquivo);
-    atualizarPreviaFoto(arquivoFoto.dataset.urlPrevia);
-  });
 }
 
 function mostrarMensagem(elemento, texto, tipo = '') {
@@ -627,7 +575,6 @@ async function inicializarFormularioReceita() {
   const botaoSalvar = document.querySelector('#botao-salvar-receita');
   const categoria = document.querySelector('#receita-categoria');
   const foto = document.querySelector('#receita-foto');
-  const arquivoFoto = document.querySelector('#receita-arquivo-foto');
 
   try {
     await requisitar('/api/usuarios/eu');
@@ -657,21 +604,9 @@ async function inicializarFormularioReceita() {
   categoria.addEventListener('change', () => carregarSubcategorias(categoria.value).catch((erro) => {
     mostrarMensagem(mensagem, erro.message, 'erro');
   }));
-  foto.addEventListener('input', () => mostrarMensagem(mensagem, ''));
-  arquivoFoto.addEventListener('change', async () => {
-    const arquivo = arquivoFoto.files[0];
-    if (!arquivo) return;
-    try {
-      const resultado = await enviarImagem(arquivo, '/api/receitas/imagem');
-      if (arquivoFoto.dataset.urlPrevia) URL.revokeObjectURL(arquivoFoto.dataset.urlPrevia);
-      delete arquivoFoto.dataset.urlPrevia;
-      foto.value = resultado.url;
-      atualizarPreviaFoto(foto.value);
-      arquivoFoto.value = '';
-      mostrarMensagem(mensagem, 'Imagem enviada. Salve a receita para concluir.', 'sucesso');
-    } catch (erro) {
-      mostrarMensagem(mensagem, erro.message, 'erro');
-    }
+  foto.addEventListener('input', () => {
+    atualizarPreviaFoto(foto.value);
+    mostrarMensagem(mensagem, '');
   });
 
   form.addEventListener('submit', async (evento) => {
@@ -694,7 +629,7 @@ async function inicializarFormularioReceita() {
     if (dados.foto && !imagemLocalValida(dados.foto)) {
       const imagemCarregou = await testarCarregamentoImagem(dados.foto);
       if (!imagemCarregou) {
-        mostrarMensagem(mensagem, 'Este link não abriu uma imagem. Use um link direto para a foto ou selecione um arquivo do computador.', 'erro');
+        mostrarMensagem(mensagem, 'Este link não abriu uma imagem. Informe um link direto para a foto.', 'erro');
         return;
       }
     }
@@ -742,7 +677,7 @@ function atualizarPreviaFoto(url) {
       aviso.hidden = false;
       mostrarMensagem(
         document.querySelector('#mensagem-form-receita'),
-        'Não foi possível carregar esta imagem. Use um link direto para a foto ou escolha um arquivo do computador.',
+        'Não foi possível carregar esta imagem. Informe um link direto para a foto.',
         'erro'
       );
     }, { once: true });
@@ -1039,54 +974,12 @@ function criarCamposConfiguracoesAdmin(configuracoes) {
     entrada.required = true;
     entrada.dataset.configuracao = campo.chave;
     rotulo.append(texto, entrada);
-    if (campo.imagem) {
-      let urlPreviaArquivo = '';
-      const previa = document.createElement('div');
-      previa.className = 'previa-configuracao-imagem';
-      previa.hidden = true;
-      entrada.addEventListener('input', () => {
-        if (urlPreviaArquivo) URL.revokeObjectURL(urlPreviaArquivo);
-        urlPreviaArquivo = '';
-        atualizarPreviaImagemConteudo(previa, entrada.value.trim());
-      });
-      rotulo.append(previa);
-
-      const arquivo = document.createElement('input');
-      arquivo.type = 'file';
-      arquivo.accept = 'image/jpeg,image/png,image/webp';
-      arquivo.setAttribute('aria-label', `Selecionar imagem para ${campo.rotulo}`);
-      const ajuda = document.createElement('span');
-      ajuda.className = 'ajuda-campo';
-      ajuda.textContent = 'JPEG, PNG ou WebP; até 5 MB. Selecione um arquivo ou informe um link direto acima.';
-      arquivo.addEventListener('change', async () => {
-        if (!arquivo.files[0]) return;
-        if (urlPreviaArquivo) URL.revokeObjectURL(urlPreviaArquivo);
-        urlPreviaArquivo = URL.createObjectURL(arquivo.files[0]);
-        atualizarPreviaImagemConteudo(previa, urlPreviaArquivo);
-        try {
-          const resultado = await enviarImagem(arquivo.files[0], '/api/configuracoes/imagem');
-          entrada.value = resultado.url;
-          entrada.dispatchEvent(new Event('input'));
-          mostrarMensagem(
-            document.querySelector('#mensagem-configuracoes'),
-            'Imagem enviada. Salve as alterações para aplicá-la ao site.',
-            'sucesso'
-          );
-        } catch (erro) {
-          mostrarMensagem(document.querySelector('#mensagem-configuracoes'), erro.message, 'erro');
-        } finally {
-          arquivo.value = '';
-        }
-      });
-      rotulo.append(arquivo, ajuda);
-    }
     grupo.append(rotulo);
   });
 
   camposConteudoSite.forEach((campo) => {
     const entrada = document.querySelector(`#config-${campo.chave}`);
     entrada.value = configuracoes[campo.chave] || '';
-    if (campo.imagem) entrada.dispatchEvent(new Event('input'));
   });
 }
 
@@ -1174,7 +1067,6 @@ async function inicializarAdmin() {
 }
 
 async function inicializar() {
-  if (document.body.dataset.page === 'form-receita') inicializarPreviaFotoLocal();
   inicializarLogin();
   inicializarCadastro();
   await inicializarSessao();

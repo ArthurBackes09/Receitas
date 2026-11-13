@@ -21,6 +21,7 @@ Receitas/
     │   ├── database/          # Pool de conexão MySQL
     │   ├── middlewares/       # Autenticação e autorização
     │   ├── routes/            # Rotas da API
+    │   ├── uploads/           # Mantém imagens enviadas anteriormente; ignorada pelo Git
     │   └── server.js
     ├── frontend/
     │   ├── css/style.css
@@ -111,13 +112,17 @@ Receitas/
 | GET | `/api/receitas/minhas` | Autenticado | Lista receitas próprias, públicas e privadas |
 | GET | `/api/receitas/administracao` | Administrador | Lista receitas públicas e privadas de todas as contas |
 | GET | `/api/receitas/:id` | Público/autenticado | Consulta receita pública; privada pelo proprietário ou administrador |
-| POST | `/api/receitas/imagem` | Autenticado | Envia uma imagem local para usar em uma receita |
 | POST | `/api/receitas` | Autenticado | Cadastra receita para o usuário do token |
 | PUT | `/api/receitas/:id` | Proprietário ou administrador | Atualiza receita própria ou de qualquer usuário |
 | DELETE | `/api/receitas/:id` | Proprietário ou administrador | Exclui receita própria ou de qualquer usuário |
+
+### Imagens e conteúdo do site
+| Método | Caminho | Acesso | Descrição |
+|---|---|---|---|
 | GET | `/api/configuracoes` | Público | Consulta os textos e as imagens configuráveis das páginas |
-| POST | `/api/configuracoes/imagem` | Administrador | Envia uma imagem local para o conteúdo das páginas |
 | PUT | `/api/configuracoes` | Administrador | Atualiza textos e imagens permitidos nas páginas existentes |
+
+As imagens de receitas e do conteúdo do site são informadas por links diretos HTTP ou HTTPS. Links para páginas de busca ou publicações não funcionam como imagem direta. O envio de novos arquivos locais não está disponível. Imagens enviadas anteriormente continuam armazenadas e podem ser exibidas.
 
 As rotas protegidas recebem o token no cabeçalho:
 
@@ -140,10 +145,10 @@ Filtros opcionais de listagem:
 - Administradores podem consultar, editar e excluir qualquer receita. Usuários comuns só podem editar ou excluir as próprias receitas.
 - Administradores podem alterar níveis de acesso, mas não podem excluir contas nem remover o próprio nível administrativo.
 - Categorias em uso por receitas ou vídeos não podem ser excluídas; a API retorna `409`.
-- Textos e imagens configuráveis das páginas são armazenados no banco; as imagens podem ser informadas por URL HTTP/HTTPS ou selecionadas do computador.
+- Textos e imagens configuráveis das páginas são armazenados no banco; novas imagens devem ser informadas por URL HTTP/HTTPS.
 - O frontend pede confirmação antes da exclusão.
-- Fotos podem ser informadas por link direto HTTP/HTTPS ou selecionadas do computador. O sistema aceita JPEG, PNG e WebP de até 5 MB; links para páginas de busca ou publicações não funcionam como imagem direta.
-- Os arquivos enviados ficam em `Organizar_Receitas/backend/uploads/` e não são incluídos no Git.
+- Fotos novas de receitas devem usar links diretos HTTP/HTTPS; links de busca ou páginas de publicação não são imagens diretas.
+- A pasta `Organizar_Receitas/backend/uploads/` é mantida para exibir fotos enviadas antes da remoção do upload local e continua ignorada pelo Git.
 - Ingredientes e modo de preparo podem ser escritos um por linha; os detalhes mostram listas e etapas.
 - Vídeos salvos já possuem modelagem no banco, mas o CRUD de vídeos não faz parte desta entrega.
 
@@ -159,11 +164,11 @@ Filtros opcionais de listagem:
 9. Entre com uma conta administradora e use `admin.html` para gerenciar perfis, receitas, categorias, subcategorias e os textos e imagens de todas as páginas; confirme que as alterações aparecem no site.
 10. Tente excluir uma categoria que esteja em uso e confirme a resposta `409`; tente remover seu próprio perfil administrativo e confirme a recusa.
 11. Acesse `/api/health` para verificar a conexão com o MySQL.
+12. Informe um link direto HTTP/HTTPS para a foto de uma receita e para as imagens configuráveis; confirme a prévia e salve as alterações. A seleção de arquivos locais não está disponível.
 
 ## Segurança e validações
 - Senhas protegidas com hash bcrypt.
 - Consultas SQL parametrizadas.
 - JWT validado no backend e usuário recarregado do banco a cada requisição protegida.
 - Regras de propriedade aplicadas no backend; esconder botões no frontend não é considerado controle de acesso.
-- Entradas obrigatórias, categoria, subcategoria, privacidade e URL da foto validadas na API.
-- Upload de imagens limitado a JPEG, PNG e WebP, com verificação da assinatura do arquivo e limite de 5 MB.
+- Entradas obrigatórias, categoria, subcategoria, privacidade e URLs de imagem validadas na API.

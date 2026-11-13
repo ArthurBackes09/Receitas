@@ -60,7 +60,7 @@ function validarDados(dados) {
     return { erro: 'A privacidade deve ser pública ou privada.' };
   }
   if (!fotoValida || foto.length > 255) {
-    return { erro: 'Informe um link HTTP/HTTPS válido ou selecione uma imagem enviada pelo computador.' };
+    return { erro: 'A foto deve ter um link HTTP ou HTTPS válido com até 255 caracteres.' };
   }
 
   return {

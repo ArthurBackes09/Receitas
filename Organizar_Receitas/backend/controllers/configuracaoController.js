@@ -120,7 +120,7 @@ async function atualizar(req, res) {
 
   for (const chave of camposDeUrl) {
     if (configuracoes[chave] !== undefined && !imagemConfiguracaoValida(configuracoes[chave])) {
-      return res.status(400).json({ mensagem: `O campo ${chave} precisa ser uma URL HTTP/HTTPS válida ou uma imagem enviada pelo computador.` });
+      return res.status(400).json({ mensagem: `O campo ${chave} precisa ser uma URL HTTP/HTTPS válida.` });
     }
   }
 

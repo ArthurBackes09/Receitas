@@ -10,7 +10,7 @@ node_modules/
 !.env.example
 !**/.env.example
 
-# Imagens enviadas pelos usuários
+# Preserve imagens já armazenadas sem versioná-las
 Organizar_Receitas/backend/uploads/
 
 # Arquivos de sistema
