@@ -12,24 +12,28 @@ Aplicação web para cadastrar e organizar receitas próprias, controlar sua pri
 
 ## Estrutura
 ```text
-Organizar_Receitas/
-├── backend/
-│   ├── controllers/       # Regras de usuários, categorias e receitas
-│   ├── database/          # Pool de conexão MySQL
-│   ├── middlewares/       # Autenticação e autorização
-│   ├── routes/            # Rotas da API
-│   └── server.js
-├── frontend/
-│   ├── css/style.css
-│   ├── js/script.js
-│   ├── index.html
-│   ├── cadastro.html
-│   ├── minhas-receitas.html
-│   ├── receita-form.html
-│   └── receita-detalhes.html
-├── sql/banco.sql
-├── package.json
-└── .env.example
+Receitas/
+├── .gitignore
+├── README.md
+└── Organizar_Receitas/
+    ├── backend/
+    │   ├── controllers/       # Regras de usuários, categorias e receitas
+    │   ├── database/          # Pool de conexão MySQL
+    │   ├── middlewares/       # Autenticação e autorização
+    │   ├── routes/            # Rotas da API
+    │   └── server.js
+    ├── frontend/
+    │   ├── css/style.css
+    │   ├── js/script.js
+    │   ├── index.html
+    │   ├── cadastro.html
+    │   ├── minhas-receitas.html
+    │   ├── receita-form.html
+    │   └── receita-detalhes.html
+    ├── sql/banco.sql
+    ├── package.json
+    ├── package-lock.json
+    └── .env.example
 ```
 
 ## Configuração

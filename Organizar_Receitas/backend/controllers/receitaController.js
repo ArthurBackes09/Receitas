@@ -30,11 +30,24 @@ function validarDados(dados) {
   const privacidade = dados.privacidade === undefined ? 'privada' : dados.privacidade;
   const foto = typeof dados.foto === 'string' ? dados.foto.trim() : '';
 
+  const fotoValida = (() => {
+    if (!foto) return true;
+    try {
+      const endereco = new URL(foto);
+      return ['http:', 'https:'].includes(endereco.protocol) && Boolean(endereco.hostname);
+    } catch (erro) {
+      return false;
+    }
+  })();
+
   if (!titulo || titulo.length > 150) {
     return { erro: 'O título é obrigatório e deve ter até 150 caracteres.' };
   }
   if (!ingredientes) return { erro: 'Informe os ingredientes.' };
   if (!modoPreparo) return { erro: 'Informe o modo de preparo.' };
+  if ([descricao, ingredientes, modoPreparo].some((texto) => Buffer.byteLength(texto, 'utf8') > 65000)) {
+    return { erro: 'A descrição, os ingredientes ou o preparo excedem o limite permitido.' };
+  }
   if (!categoriaId) return { erro: 'Selecione uma categoria válida.' };
   if (dados.subcategoria_id !== '' && dados.subcategoria_id != null && !subcategoriaId) {
     return { erro: 'Selecione uma subcategoria válida.' };
@@ -42,7 +55,7 @@ function validarDados(dados) {
   if (!['publica', 'privada'].includes(privacidade)) {
     return { erro: 'A privacidade deve ser pública ou privada.' };
   }
-  if (foto && (!/^https?:\/\/\S+$/i.test(foto) || foto.length > 255)) {
+  if (!fotoValida || foto.length > 255) {
     return { erro: 'A foto deve ser um endereço HTTP ou HTTPS com até 255 caracteres.' };
   }
 
