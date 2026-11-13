@@ -176,6 +176,30 @@ async function listarMinhas(req, res) {
   }
 }
 
+async function listarAdministracao(req, res) {
+  const erroFiltro = validarFiltros(req.query, true);
+  if (erroFiltro) return res.status(400).json({ mensagem: erroFiltro });
+
+  try {
+    const parametros = [];
+    const filtros = montarFiltros(req.query, parametros, true) + montarBusca(req.query, parametros);
+    const [receitas] = await conexao.execute(
+      `SELECT ${camposReceita}
+       FROM receitas r
+       JOIN categorias c ON c.id = r.categoria_id
+       LEFT JOIN subcategorias s ON s.id = r.subcategoria_id
+       JOIN usuarios u ON u.id = r.usuario_id
+       WHERE 1 = 1${filtros}
+       ORDER BY r.id DESC`,
+      parametros
+    );
+    return res.json({ receitas });
+  } catch (erro) {
+    console.error('Erro ao listar receitas para administração:', erro);
+    return res.status(500).json({ mensagem: 'Erro interno ao consultar receitas.' });
+  }
+}
+
 async function consultarUma(req, res) {
   const id = validarId(req.params.id);
   if (!id) return res.status(400).json({ mensagem: 'Identificador de receita inválido.' });
@@ -194,11 +218,13 @@ async function consultarUma(req, res) {
 
     const receita = receitas[0];
     const proprietaria = req.usuario && Number(req.usuario.id) === Number(receita.usuario_id);
-    if (receita.privacidade === 'privada' && !proprietaria) {
+    const administradora = req.usuario && req.usuario.nivel === 'administrador';
+    if (receita.privacidade === 'privada' && !proprietaria && !administradora) {
       return res.status(404).json({ mensagem: 'Receita não encontrada.' });
     }
 
     receita.proprietaria = Boolean(proprietaria);
+    receita.pode_editar = Boolean(proprietaria || administradora);
     return res.json({ receita });
   } catch (erro) {
     console.error('Erro ao consultar receita:', erro);
@@ -254,7 +280,8 @@ async function atualizar(req, res) {
       [id]
     );
     if (receitas.length === 0) return res.status(404).json({ mensagem: 'Receita não encontrada.' });
-    if (Number(receitas[0].usuario_id) !== Number(req.usuario.id)) {
+    const ehAdministradora = req.usuario.nivel === 'administrador';
+    if (Number(receitas[0].usuario_id) !== Number(req.usuario.id) && !ehAdministradora) {
       return res.status(403).json({ mensagem: 'Você só pode editar suas próprias receitas.' });
     }
 
@@ -268,23 +295,25 @@ async function atualizar(req, res) {
     if (erroCategoria) return res.status(400).json({ mensagem: erroCategoria });
 
     const dados = validacao.dados;
+    const clausulaProprietario = ehAdministradora ? '' : ' AND usuario_id = ?';
+    const parametrosAtualizacao = [
+      dados.categoria_id,
+      dados.subcategoria_id,
+      dados.titulo,
+      dados.descricao,
+      dados.ingredientes,
+      dados.modo_preparo,
+      dados.foto,
+      dados.privacidade,
+      id
+    ];
+    if (!ehAdministradora) parametrosAtualizacao.push(req.usuario.id);
     await conexao.execute(
       `UPDATE receitas
        SET categoria_id = ?, subcategoria_id = ?, titulo = ?, descricao = ?,
            ingredientes = ?, modo_preparo = ?, foto = ?, privacidade = ?
-       WHERE id = ? AND usuario_id = ?`,
-      [
-        dados.categoria_id,
-        dados.subcategoria_id,
-        dados.titulo,
-        dados.descricao,
-        dados.ingredientes,
-        dados.modo_preparo,
-        dados.foto,
-        dados.privacidade,
-        id,
-        req.usuario.id
-      ]
+       WHERE id = ?${clausulaProprietario}`,
+      parametrosAtualizacao
     );
     return res.json({ mensagem: 'Receita atualizada com sucesso.' });
   } catch (erro) {
@@ -303,13 +332,16 @@ async function excluir(req, res) {
       [id]
     );
     if (receitas.length === 0) return res.status(404).json({ mensagem: 'Receita não encontrada.' });
-    if (Number(receitas[0].usuario_id) !== Number(req.usuario.id)) {
+    const ehAdministradora = req.usuario.nivel === 'administrador';
+    if (Number(receitas[0].usuario_id) !== Number(req.usuario.id) && !ehAdministradora) {
       return res.status(403).json({ mensagem: 'Você só pode excluir suas próprias receitas.' });
     }
 
+    const clausulaProprietario = ehAdministradora ? '' : ' AND usuario_id = ?';
+    const parametrosExclusao = ehAdministradora ? [id] : [id, req.usuario.id];
     await conexao.execute(
-      'DELETE FROM receitas WHERE id = ? AND usuario_id = ?',
-      [id, req.usuario.id]
+      `DELETE FROM receitas WHERE id = ?${clausulaProprietario}`,
+      parametrosExclusao
     );
     return res.json({ mensagem: 'Receita excluída com sucesso.' });
   } catch (erro) {
@@ -318,4 +350,12 @@ async function excluir(req, res) {
   }
 }
 
-module.exports = { listarPublicas, listarMinhas, consultarUma, cadastrar, atualizar, excluir };
+module.exports = {
+  listarPublicas,
+  listarMinhas,
+  listarAdministracao,
+  consultarUma,
+  cadastrar,
+  atualizar,
+  excluir
+};

@@ -6,6 +6,7 @@ const conexao = require('./database/conexao');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const receitaRoutes = require('./routes/receitaRoutes');
+const configuracaoRoutes = require('./routes/configuracaoRoutes');
 const corsMiddleware = require('./middlewares/corsMiddleware');
 
 const app = express();
@@ -27,6 +28,7 @@ app.get('/api/health', async (req, res) => {
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/categorias', categoriaRoutes);
 app.use('/api/receitas', receitaRoutes);
+app.use('/api/configuracoes', configuracaoRoutes);
 
 if (!process.env.JWT_SECRET) {
   console.warn('Aviso: JWT_SECRET não foi configurado no arquivo .env.');

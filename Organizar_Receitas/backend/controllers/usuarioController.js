@@ -100,4 +100,52 @@ async function dadosAdmin(req, res) {
   return res.json({ mensagem: 'Acesso administrativo permitido.', usuario: req.usuario });
 }
 
-module.exports = { cadastrar, login, dadosAutenticado, dadosAdmin };
+async function listarUsuariosAdmin(req, res) {
+  try {
+    const [usuarios] = await conexao.execute(
+      'SELECT id, nome, email, nivel FROM usuarios ORDER BY nome'
+    );
+    return res.json({ usuarios });
+  } catch (erro) {
+    console.error('Erro ao listar usuários para administração:', erro);
+    return res.status(500).json({ mensagem: 'Erro interno ao consultar usuários.' });
+  }
+}
+
+async function alterarNivelAdmin(req, res) {
+  const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : null;
+  const nivel = req.body && req.body.nivel;
+  if (!Number.isSafeInteger(id) || id < 1) {
+    return res.status(400).json({ mensagem: 'Identificador de usuário inválido.' });
+  }
+  if (!['comum', 'administrador'].includes(nivel)) {
+    return res.status(400).json({ mensagem: 'O nível deve ser comum ou administrador.' });
+  }
+  if (Number(req.usuario.id) === id && nivel !== 'administrador') {
+    return res.status(400).json({ mensagem: 'Não é possível remover seu próprio acesso administrativo.' });
+  }
+
+  try {
+    const [resultado] = await conexao.execute(
+      'UPDATE usuarios SET nivel = ? WHERE id = ?',
+      [nivel, id]
+    );
+    if (resultado.affectedRows === 0) {
+      const [usuarios] = await conexao.execute('SELECT id FROM usuarios WHERE id = ?', [id]);
+      if (usuarios.length === 0) return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
+    }
+    return res.json({ mensagem: 'Perfil do usuário atualizado com sucesso.' });
+  } catch (erro) {
+    console.error('Erro ao alterar perfil de usuário:', erro);
+    return res.status(500).json({ mensagem: 'Erro interno ao atualizar perfil.' });
+  }
+}
+
+module.exports = {
+  cadastrar,
+  login,
+  dadosAutenticado,
+  dadosAdmin,
+  listarUsuariosAdmin,
+  alterarNivelAdmin
+};

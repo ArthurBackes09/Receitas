@@ -61,6 +61,18 @@ CREATE TABLE IF NOT EXISTS videos_salvos (
         ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS configuracoes_site (
+    chave VARCHAR(50) PRIMARY KEY,
+    valor TEXT NOT NULL
+);
+
+INSERT INTO configuracoes_site (chave, valor) VALUES
+    ('titulo', 'Todas as suas receitas favoritas em um só lugar.'),
+    ('subtitulo', 'Seu caderno, seus sabores'),
+    ('descricao', 'Guarde suas criações, organize cada preparo e descubra receitas compartilhadas por outros cozinheiros.'),
+    ('foto_destaque', 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=85')
+ON DUPLICATE KEY UPDATE chave = VALUES(chave);
+
 INSERT INTO categorias (nome) VALUES
     ('Doces'), ('Salgados'), ('Bebidas'), ('Massas'), ('Outros')
 ON DUPLICATE KEY UPDATE nome = VALUES(nome);

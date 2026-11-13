@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel de administração do Organizador de Receitas.">
+  <title>Administração | Organizador de Receitas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="admin">
+  <header class="topo-site">
+    <a class="marca" href="index.html">
+      <span class="marca-icone" aria-hidden="true">OR</span>
+      <span>Organizador de Receitas</span>
+    </a>
+    <nav class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="minhas-receitas.html">Minhas receitas</a>
+      <button class="botao-nav botao-sair" id="botao-sair" type="button">Sair</button>
+    </nav>
+  </header>
+
+  <main class="pagina-conteudo">
+    <a class="voltar-link" href="index.html">← Voltar ao site</a>
+    <div class="cabecalho-pagina">
+      <div>
+        <p class="sobretitulo">Gerenciamento do site</p>
+        <h1>Painel administrativo</h1>
+        <p>Gerencie receitas, perfis, categorias e o conteúdo da página inicial.</p>
+      </div>
+    </div>
+    <p id="mensagem-admin" class="mensagem" role="status" aria-live="polite"></p>
+
+    <div id="conteudo-admin" hidden>
+      <section class="painel-admin-secao" aria-labelledby="titulo-admin-receitas">
+        <h2 id="titulo-admin-receitas">Receitas</h2>
+        <p>Administradores podem editar ou excluir receitas de qualquer conta.</p>
+        <div class="filtros filtros-pagina">
+          <label>Pesquisar
+            <input id="busca-admin-receitas" type="search" placeholder="Título ou descrição">
+          </label>
+          <label>Categoria
+            <select id="filtro-admin-categoria"><option value="">Todas</option></select>
+          </label>
+          <label>Privacidade
+            <select id="filtro-admin-privacidade">
+              <option value="">Todas</option>
+              <option value="publica">Públicas</option>
+              <option value="privada">Privadas</option>
+            </select>
+          </label>
+        </div>
+        <div id="lista-admin-receitas" class="grade-receitas"></div>
+      </section>
+
+      <section class="painel-admin-secao" aria-labelledby="titulo-admin-usuarios">
+        <h2 id="titulo-admin-usuarios">Usuários</h2>
+        <p>Altere o nível de acesso. As contas não podem ser excluídas por este painel.</p>
+        <div id="lista-admin-usuarios" class="lista-admin"></div>
+      </section>
+
+      <section class="painel-admin-secao" aria-labelledby="titulo-admin-categorias">
+        <h2 id="titulo-admin-categorias">Categorias e subcategorias</h2>
+        <form id="form-categoria-admin" class="formulario formulario-admin">
+          <label>Nova categoria
+            <input id="nome-categoria-admin" type="text" maxlength="50" required>
+          </label>
+          <button class="botao-principal" type="submit">Adicionar categoria</button>
+        </form>
+        <div id="lista-admin-categorias" class="lista-admin"></div>
+
+        <form id="form-subcategoria-admin" class="formulario formulario-admin">
+          <label>Categoria
+            <select id="categoria-subcategoria-admin" required>
+              <option value="">Selecione uma categoria</option>
+            </select>
+          </label>
+          <label>Nova subcategoria
+            <input id="nome-subcategoria-admin" type="text" maxlength="50" required>
+          </label>
+          <button class="botao-principal" type="submit">Adicionar subcategoria</button>
+        </form>
+        <div id="lista-admin-subcategorias" class="lista-admin"></div>
+      </section>
+
+      <section class="painel-admin-secao" aria-labelledby="titulo-admin-conteudo">
+        <h2 id="titulo-admin-conteudo">Conteúdo visual da página inicial</h2>
+        <form id="form-configuracoes-admin" class="formulario formulario-admin">
+          <label>Título principal
+            <input id="config-titulo" type="text" maxlength="100" required>
+          </label>
+          <label>Subtítulo
+            <input id="config-subtitulo" type="text" maxlength="150" required>
+          </label>
+          <label>Descrição
+            <textarea id="config-descricao" rows="3" maxlength="500" required></textarea>
+          </label>
+          <label>URL da imagem de destaque
+            <input id="config-foto-destaque" type="url" maxlength="500" required>
+          </label>
+          <button class="botao-principal" type="submit">Salvar conteúdo</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
+    <p>Um caderno digital para guardar e compartilhar bons sabores.</p>
+  </footer>
+  <script src="js/script.js"></script>
+</body>
+</html>

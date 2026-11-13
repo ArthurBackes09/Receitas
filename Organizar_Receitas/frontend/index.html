@@ -18,6 +18,7 @@
       <a href="#receitas-publicas">Explorar receitas</a>
       <a href="#acesso-conta" id="link-entrar">Entrar</a>
       <a href="minhas-receitas.html" id="link-minhas" hidden>Minhas receitas</a>
+      <a href="admin.html" id="link-admin" hidden>Administração</a>
       <a class="botao-nav" href="receita-form.html" id="link-nova" hidden>＋ Nova receita</a>
       <button class="botao-nav botao-sair" id="botao-sair" type="button" hidden>Sair</button>
     </nav>
@@ -26,16 +27,18 @@
   <main>
     <section class="hero">
       <div class="hero-conteudo">
-        <p class="sobretitulo">Seu caderno, seus sabores</p>
-        <h1>Todas as suas receitas favoritas em um só lugar.</h1>
-        <p>Guarde suas criações, organize cada preparo e descubra receitas compartilhadas por outros cozinheiros.</p>
+        <p class="sobretitulo" id="hero-subtitulo">Seu caderno, seus sabores</p>
+        <h1 id="hero-titulo">Todas as suas receitas favoritas em um só lugar.</h1>
+        <p id="hero-descricao">Guarde suas criações, organize cada preparo e descubra receitas compartilhadas por outros cozinheiros.</p>
         <div class="hero-acoes">
           <a class="botao-principal" href="#receitas-publicas">Explorar receitas</a>
           <a class="botao-secundario-link" href="#acesso-conta" id="hero-entrar">Acessar minha conta</a>
         </div>
       </div>
-      <div class="hero-foto" role="img" aria-label="Mesa com um prato caseiro colorido"></div>
+      <div class="hero-foto"><img id="foto-destaque" src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Mesa com um prato caseiro colorido"></div>
     </section>
+
+    <p id="mensagem-configuracoes" class="mensagem" role="status"></p>
 
     <section class="painel-usuario" id="painel-usuario" hidden>
       <div class="painel-usuario-topo">
@@ -72,8 +75,8 @@
       </section>
       <section class="painel-administrador" id="painel-admin" hidden>
         <h3>Área do administrador</h3>
-        <p>Seu perfil possui acesso administrativo. As receitas continuam sujeitas às regras de propriedade.</p>
-        <button type="button" id="botao-admin">Verificar acesso administrativo</button>
+        <p>Gerencie o conteúdo e os dados da comunidade.</p>
+        <a class="botao-principal" href="admin.html">Abrir painel administrativo</a>
       </section>
     </section>
 

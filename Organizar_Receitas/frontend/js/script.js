@@ -6,6 +6,9 @@ async function lerResposta(resposta) {
   try {
     return JSON.parse(texto);
   } catch (erro) {
+    if (resposta.headers.get('content-type')?.includes('text/html')) {
+      return { mensagem: 'O backend não respondeu à API. Inicie-o com "npm start" na pasta Organizar_Receitas.' };
+    }
     return { mensagem: texto };
   }
 }
@@ -93,7 +96,7 @@ function criarCartaoReceita(receita, opcoes = {}) {
   detalhes.textContent = 'Ver receita';
   acoes.append(detalhes);
 
-  if (opcoes.proprietaria) {
+  if (opcoes.proprietaria || opcoes.podeGerenciar) {
     const editar = document.createElement('a');
     editar.className = 'botao-pequeno botao-contorno';
     editar.href = `receita-form.html?id=${encodeURIComponent(receita.id)}`;
@@ -102,7 +105,11 @@ function criarCartaoReceita(receita, opcoes = {}) {
     excluir.type = 'button';
     excluir.className = 'botao-pequeno botao-perigo';
     excluir.textContent = 'Excluir';
-    excluir.addEventListener('click', () => excluirReceita(receita.id, cartao));
+    excluir.addEventListener('click', async () => {
+      if (await excluirReceita(receita.id, cartao) && opcoes.podeGerenciar) {
+        await carregarReceitasAdmin();
+      }
+    });
     acoes.append(editar, excluir);
   }
 
@@ -146,7 +153,7 @@ async function excluirReceita(id, cartao) {
     if (listaMinhas && !listaMinhas.querySelector('.cartao-receita')) {
       renderizarReceitas(listaMinhas, [], { proprietaria: true });
     }
-    await carregarMinhasReceitas();
+    if (document.querySelector('#lista-minhas, #lista-painel')) await carregarMinhasReceitas();
     return true;
   } catch (erro) {
     mostrarMensagem(mensagem, erro.message, 'erro');
@@ -183,6 +190,19 @@ async function carregarCategorias(selects = []) {
     categorias.forEach((categoria) => select.add(new Option(categoria.nome, categoria.id)));
   });
   return categorias;
+}
+
+async function carregarConfiguracoesSite() {
+  const resultado = await requisitar('/api/configuracoes', { autenticada: false });
+  const configuracoes = resultado.configuracoes || {};
+  const titulo = document.querySelector('#hero-titulo');
+  const subtitulo = document.querySelector('#hero-subtitulo');
+  const descricao = document.querySelector('#hero-descricao');
+  const foto = document.querySelector('#foto-destaque');
+  if (titulo && configuracoes.titulo) titulo.textContent = configuracoes.titulo;
+  if (subtitulo && configuracoes.subtitulo) subtitulo.textContent = configuracoes.subtitulo;
+  if (descricao && configuracoes.descricao) descricao.textContent = configuracoes.descricao;
+  if (foto && configuracoes.foto_destaque) foto.src = configuracoes.foto_destaque;
 }
 
 async function carregarPublicas() {
@@ -270,6 +290,7 @@ function atualizarInterfaceAutenticada(usuario) {
   const nova = document.querySelector('#link-nova');
   const sair = document.querySelector('#botao-sair');
   const admin = document.querySelector('#painel-admin');
+  const linkAdmin = document.querySelector('#link-admin');
 
   if (painel) painel.hidden = !usuario;
   if (acesso) acesso.hidden = Boolean(usuario);
@@ -279,6 +300,7 @@ function atualizarInterfaceAutenticada(usuario) {
   if (nova) nova.hidden = !usuario;
   if (sair) sair.hidden = !usuario;
   if (admin) admin.hidden = !usuario || usuario.nivel !== 'administrador';
+  if (linkAdmin) linkAdmin.hidden = !usuario || usuario.nivel !== 'administrador';
   const nome = document.querySelector('#nome-usuario');
   if (nome && usuario) nome.textContent = usuario.nome;
 }
@@ -287,7 +309,7 @@ async function inicializarSessao() {
   const sair = document.querySelector('#botao-sair');
   if (sair) sair.addEventListener('click', encerrarSessao);
   if (!tokenAtual()) {
-    if (['minhas', 'form-receita'].includes(document.body.dataset.page)) encerrarSessao();
+    if (['minhas', 'form-receita', 'admin'].includes(document.body.dataset.page)) encerrarSessao();
     return;
   }
 
@@ -295,7 +317,7 @@ async function inicializarSessao() {
     const resultado = await requisitar('/api/usuarios/eu');
     localStorage.setItem('usuarioReceitas', JSON.stringify(resultado.usuario));
     atualizarInterfaceAutenticada(resultado.usuario);
-    await carregarMinhasReceitas();
+    if (document.body.dataset.page !== 'admin') await carregarMinhasReceitas();
   } catch (erro) {
     encerrarSessao();
   }
@@ -304,9 +326,9 @@ async function inicializarSessao() {
 function inicializarLogin() {
   const form = document.querySelector('#form-login');
   if (!form) return;
+  const mensagem = document.querySelector('#mensagem-login');
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
-    const mensagem = document.querySelector('#mensagem-login');
     const botao = form.querySelector('button[type="submit"]');
     botao.disabled = true;
     botao.textContent = 'Entrando...';
@@ -386,18 +408,6 @@ function inicializarPaginaInicial() {
     const campo = document.querySelector(seletor);
     if (campo) campo.addEventListener(campo.type === 'search' ? 'input' : 'change', carregarMinhasReceitas);
   });
-  const botaoAdmin = document.querySelector('#botao-admin');
-  if (botaoAdmin) {
-    botaoAdmin.addEventListener('click', async () => {
-      const mensagem = document.querySelector('#mensagem-painel');
-      try {
-        const resultado = await requisitar('/api/usuarios/admin');
-        mostrarMensagem(mensagem, resultado.mensagem, 'sucesso');
-      } catch (erro) {
-        mostrarMensagem(mensagem, erro.message, 'erro');
-      }
-    });
-  }
 }
 
 async function inicializarListaMinhas() {
@@ -442,7 +452,7 @@ async function inicializarFormularioReceita() {
     if (id) {
       const resultado = await requisitar(`/api/receitas/${encodeURIComponent(id)}`);
       const receita = resultado.receita;
-      if (!receita.proprietaria) throw new Error('Você só pode editar suas próprias receitas.');
+      if (!receita.pode_editar && !receita.proprietaria) throw new Error('Você só pode editar suas próprias receitas.');
       tituloPagina.textContent = 'Editar receita';
       botaoSalvar.textContent = 'Salvar alterações';
       document.querySelector('#receita-titulo').value = receita.titulo;
@@ -566,17 +576,303 @@ async function inicializarDetalhes() {
       preparo.append(linha);
     });
 
-    if (receita.proprietaria) {
+    if (receita.pode_editar || receita.proprietaria) {
       const acoes = document.querySelector('#acoes-detalhe');
       acoes.hidden = false;
       document.querySelector('#editar-detalhe').href = `receita-form.html?id=${encodeURIComponent(receita.id)}`;
       document.querySelector('#excluir-detalhe').addEventListener('click', async () => {
-        if (await excluirReceita(receita.id)) window.location.href = 'minhas-receitas.html';
+        if (await excluirReceita(receita.id)) {
+          window.location.href = receita.proprietaria ? 'minhas-receitas.html' : 'admin.html';
+        }
       });
     }
     artigo.hidden = false;
   } catch (erro) {
     mostrarMensagem(mensagem, erro.message, 'erro');
+  }
+}
+
+async function carregarReceitasAdmin() {
+  const container = document.querySelector('#lista-admin-receitas');
+  if (!container) return;
+  const parametros = new URLSearchParams();
+  const busca = document.querySelector('#busca-admin-receitas')?.value.trim();
+  const categoria = document.querySelector('#filtro-admin-categoria')?.value;
+  const privacidade = document.querySelector('#filtro-admin-privacidade')?.value;
+  if (busca) parametros.set('busca', busca);
+  if (categoria) parametros.set('categoria', categoria);
+  if (privacidade) parametros.set('privacidade', privacidade);
+
+  const resultado = await requisitar(`/api/receitas/administracao?${parametros}`);
+  renderizarReceitas(container, resultado.receitas || [], {
+    proprietaria: true,
+    podeGerenciar: true,
+    mostrarPrivacidade: true,
+    vazioTitulo: 'Nenhuma receita encontrada',
+    vazioTexto: 'Não há receitas para os filtros selecionados.'
+  });
+}
+
+async function carregarUsuariosAdmin() {
+  const container = document.querySelector('#lista-admin-usuarios');
+  if (!container) return;
+  const resultado = await requisitar('/api/usuarios/admin/usuarios');
+  const usuarioAtual = JSON.parse(localStorage.getItem('usuarioReceitas') || 'null');
+  container.replaceChildren();
+
+  (resultado.usuarios || []).forEach((usuario) => {
+    const item = document.createElement('article');
+    item.className = 'item-admin';
+    const informacoes = document.createElement('div');
+    const nome = document.createElement('strong');
+    nome.textContent = usuario.nome;
+    const email = document.createElement('p');
+    email.textContent = usuario.email;
+    informacoes.append(nome, email);
+
+    const acoes = document.createElement('div');
+    acoes.className = 'acoes-admin';
+    const nivel = document.createElement('select');
+    nivel.setAttribute('aria-label', `Nível de acesso de ${usuario.nome}`);
+    nivel.add(new Option('Comum', 'comum'));
+    nivel.add(new Option('Administrador', 'administrador'));
+    nivel.value = usuario.nivel;
+    if (usuarioAtual && Number(usuarioAtual.id) === Number(usuario.id)) {
+      nivel.options[0].disabled = true;
+    }
+
+    const salvar = document.createElement('button');
+    salvar.type = 'button';
+    salvar.className = 'botao-pequeno';
+    salvar.textContent = 'Salvar perfil';
+    salvar.addEventListener('click', async () => {
+      try {
+        const atualizado = await requisitar(
+          `/api/usuarios/admin/usuarios/${encodeURIComponent(usuario.id)}/nivel`,
+          { method: 'PUT', body: { nivel: nivel.value } }
+        );
+        mostrarMensagem(document.querySelector('#mensagem-admin'), atualizado.mensagem, 'sucesso');
+        await carregarUsuariosAdmin();
+      } catch (erro) {
+        mostrarMensagem(document.querySelector('#mensagem-admin'), erro.message, 'erro');
+      }
+    });
+    acoes.append(nivel, salvar);
+    item.append(informacoes, acoes);
+    container.append(item);
+  });
+
+  if (!container.children.length) {
+    const vazio = document.createElement('p');
+    vazio.textContent = 'Nenhum usuário cadastrado.';
+    container.append(vazio);
+  }
+}
+
+async function carregarCategoriasAdmin() {
+  const resultado = await requisitar('/api/categorias');
+  const categorias = resultado.categorias || [];
+  const container = document.querySelector('#lista-admin-categorias');
+  const filtro = document.querySelector('#filtro-admin-categoria');
+  const seletor = document.querySelector('#categoria-subcategoria-admin');
+  const categoriaSelecionada = seletor.value;
+  filtro.replaceChildren(new Option('Todas', ''));
+  seletor.replaceChildren(new Option('Selecione uma categoria', ''));
+  container.replaceChildren();
+
+  categorias.forEach((categoria) => {
+    filtro.add(new Option(categoria.nome, categoria.id));
+    seletor.add(new Option(categoria.nome, categoria.id));
+
+    const item = document.createElement('article');
+    item.className = 'item-admin';
+    const nome = document.createElement('strong');
+    nome.textContent = categoria.nome;
+    const acoes = document.createElement('div');
+    acoes.className = 'acoes-admin';
+    const editar = document.createElement('button');
+    editar.type = 'button';
+    editar.className = 'botao-pequeno botao-contorno';
+    editar.textContent = 'Editar';
+    editar.addEventListener('click', async () => {
+      const novoNome = window.prompt('Novo nome da categoria:', categoria.nome);
+      if (novoNome === null) return;
+      try {
+        const resposta = await requisitar(`/api/categorias/${categoria.id}`, {
+          method: 'PUT',
+          body: { nome: novoNome }
+        });
+        mostrarMensagem(document.querySelector('#mensagem-admin'), resposta.mensagem, 'sucesso');
+        await carregarCategoriasAdmin();
+      } catch (erro) {
+        mostrarMensagem(document.querySelector('#mensagem-admin'), erro.message, 'erro');
+      }
+    });
+    const excluir = document.createElement('button');
+    excluir.type = 'button';
+    excluir.className = 'botao-pequeno botao-perigo';
+    excluir.textContent = 'Excluir';
+    excluir.addEventListener('click', async () => {
+      if (!window.confirm(`Excluir a categoria "${categoria.nome}"?`)) return;
+      try {
+        const resposta = await requisitar(`/api/categorias/${categoria.id}`, { method: 'DELETE' });
+        mostrarMensagem(document.querySelector('#mensagem-admin'), resposta.mensagem, 'sucesso');
+        await carregarCategoriasAdmin();
+        await carregarSubcategoriasAdmin();
+      } catch (erro) {
+        mostrarMensagem(document.querySelector('#mensagem-admin'), erro.message, 'erro');
+      }
+    });
+    acoes.append(editar, excluir);
+    item.append(nome, acoes);
+    container.append(item);
+  });
+
+  if (categoriaSelecionada && categorias.some((categoria) => String(categoria.id) === categoriaSelecionada)) {
+    seletor.value = categoriaSelecionada;
+  }
+  await carregarSubcategoriasAdmin();
+}
+
+async function carregarSubcategoriasAdmin() {
+  const container = document.querySelector('#lista-admin-subcategorias');
+  const categoriaId = document.querySelector('#categoria-subcategoria-admin')?.value;
+  if (!container) return;
+  container.replaceChildren();
+  if (!categoriaId) return;
+
+  const resultado = await requisitar(`/api/categorias/${encodeURIComponent(categoriaId)}/subcategorias`);
+  (resultado.subcategorias || []).forEach((subcategoria) => {
+    const item = document.createElement('article');
+    item.className = 'item-admin';
+    const nome = document.createElement('strong');
+    nome.textContent = subcategoria.nome;
+    const acoes = document.createElement('div');
+    acoes.className = 'acoes-admin';
+    const editar = document.createElement('button');
+    editar.type = 'button';
+    editar.className = 'botao-pequeno botao-contorno';
+    editar.textContent = 'Editar';
+    editar.addEventListener('click', async () => {
+      const novoNome = window.prompt('Novo nome da subcategoria:', subcategoria.nome);
+      if (novoNome === null) return;
+      try {
+        const resposta = await requisitar(`/api/categorias/subcategorias/${subcategoria.id}`, {
+          method: 'PUT',
+          body: { nome: novoNome }
+        });
+        mostrarMensagem(document.querySelector('#mensagem-admin'), resposta.mensagem, 'sucesso');
+        await carregarSubcategoriasAdmin();
+      } catch (erro) {
+        mostrarMensagem(document.querySelector('#mensagem-admin'), erro.message, 'erro');
+      }
+    });
+    const excluir = document.createElement('button');
+    excluir.type = 'button';
+    excluir.className = 'botao-pequeno botao-perigo';
+    excluir.textContent = 'Excluir';
+    excluir.addEventListener('click', async () => {
+      if (!window.confirm(`Excluir a subcategoria "${subcategoria.nome}"?`)) return;
+      try {
+        const resposta = await requisitar(`/api/categorias/subcategorias/${subcategoria.id}`, {
+          method: 'DELETE'
+        });
+        mostrarMensagem(document.querySelector('#mensagem-admin'), resposta.mensagem, 'sucesso');
+        await carregarSubcategoriasAdmin();
+      } catch (erro) {
+        mostrarMensagem(document.querySelector('#mensagem-admin'), erro.message, 'erro');
+      }
+    });
+    acoes.append(editar, excluir);
+    item.append(nome, acoes);
+    container.append(item);
+  });
+}
+
+async function carregarConfiguracoesAdmin() {
+  const resultado = await requisitar('/api/configuracoes');
+  const configuracoes = resultado.configuracoes || {};
+  document.querySelector('#config-titulo').value = configuracoes.titulo || '';
+  document.querySelector('#config-subtitulo').value = configuracoes.subtitulo || '';
+  document.querySelector('#config-descricao').value = configuracoes.descricao || '';
+  document.querySelector('#config-foto-destaque').value = configuracoes.foto_destaque || '';
+}
+
+async function inicializarAdmin() {
+  const mensagem = document.querySelector('#mensagem-admin');
+  const conteudo = document.querySelector('#conteudo-admin');
+  try {
+    await requisitar('/api/usuarios/admin');
+    conteudo.hidden = false;
+  } catch (erro) {
+    mostrarMensagem(mensagem, erro.message, 'erro');
+    return;
+  }
+
+  const manejarErro = (erro) => mostrarMensagem(mensagem, erro.message, 'erro');
+  const busca = document.querySelector('#busca-admin-receitas');
+  const categoriaFiltro = document.querySelector('#filtro-admin-categoria');
+  const privacidadeFiltro = document.querySelector('#filtro-admin-privacidade');
+  busca.addEventListener('input', () => carregarReceitasAdmin().catch(manejarErro));
+  categoriaFiltro.addEventListener('change', () => carregarReceitasAdmin().catch(manejarErro));
+  privacidadeFiltro.addEventListener('change', () => carregarReceitasAdmin().catch(manejarErro));
+  document.querySelector('#categoria-subcategoria-admin').addEventListener('change', () => {
+    carregarSubcategoriasAdmin().catch(manejarErro);
+  });
+
+  document.querySelector('#form-categoria-admin').addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    try {
+      const nome = document.querySelector('#nome-categoria-admin').value.trim();
+      const resposta = await requisitar('/api/categorias', { method: 'POST', body: { nome } });
+      mostrarMensagem(mensagem, resposta.mensagem, 'sucesso');
+      evento.currentTarget.reset();
+      await carregarCategoriasAdmin();
+    } catch (erro) {
+      manejarErro(erro);
+    }
+  });
+  document.querySelector('#form-subcategoria-admin').addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    try {
+      const categoriaId = document.querySelector('#categoria-subcategoria-admin').value;
+      const nome = document.querySelector('#nome-subcategoria-admin').value.trim();
+      const resposta = await requisitar(`/api/categorias/${encodeURIComponent(categoriaId)}/subcategorias`, {
+        method: 'POST',
+        body: { nome }
+      });
+      mostrarMensagem(mensagem, resposta.mensagem, 'sucesso');
+      evento.currentTarget.reset();
+      await carregarCategoriasAdmin();
+    } catch (erro) {
+      manejarErro(erro);
+    }
+  });
+  document.querySelector('#form-configuracoes-admin').addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    try {
+      const configuracoes = {
+        titulo: document.querySelector('#config-titulo').value.trim(),
+        subtitulo: document.querySelector('#config-subtitulo').value.trim(),
+        descricao: document.querySelector('#config-descricao').value.trim(),
+        foto_destaque: document.querySelector('#config-foto-destaque').value.trim()
+      };
+      const resposta = await requisitar('/api/configuracoes', { method: 'PUT', body: configuracoes });
+      mostrarMensagem(mensagem, resposta.mensagem, 'sucesso');
+    } catch (erro) {
+      manejarErro(erro);
+    }
+  });
+
+  try {
+    await Promise.all([
+      carregarReceitasAdmin(),
+      carregarUsuariosAdmin(),
+      carregarCategoriasAdmin(),
+      carregarConfiguracoesAdmin()
+    ]);
+  } catch (erro) {
+    manejarErro(erro);
   }
 }
 
@@ -586,7 +882,7 @@ async function inicializar() {
   await inicializarSessao();
 
   const pagina = document.body.dataset.page;
-  if (['minhas', 'form-receita'].includes(pagina) && !tokenAtual()) return;
+  if (['minhas', 'form-receita', 'admin'].includes(pagina) && !tokenAtual()) return;
   if (pagina === 'inicio') {
     inicializarPaginaInicial();
     try {
@@ -595,6 +891,9 @@ async function inicializar() {
         categoria,
         document.querySelector('#filtro-categoria-painel')
       ]);
+      await carregarConfiguracoesSite().catch((erro) => {
+        mostrarMensagem(document.querySelector('#mensagem-configuracoes'), erro.message, 'erro');
+      });
       await carregarPublicas();
     } catch (erro) {
       mostrarMensagem(document.querySelector('#mensagem-publicas'), erro.message, 'erro');
@@ -611,6 +910,8 @@ async function inicializar() {
     await inicializarFormularioReceita();
   } else if (pagina === 'detalhes') {
     await inicializarDetalhes();
+  } else if (pagina === 'admin') {
+    await inicializarAdmin();
   }
 }
 
