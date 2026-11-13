@@ -60,17 +60,21 @@ Receitas/
 
    Não envie `.env` ou credenciais reais para o repositório.
 
-5. Inicie o backend dentro de `Organizar_Receitas`:
+5. Inicie o backend dentro da pasta `Organizar_Receitas/backend`:
 
    ```bash
-   npm start
+   node server.js
    ```
 
-6. Abra `http://localhost:3000`. O Express serve o frontend e a API; não abra os arquivos HTML diretamente.
+6. Abra o site de uma destas formas:
+   - Acesse `http://localhost:3000`, servido pelo Express.
+   - Para usar a extensão Go Live, deixe o backend executando e abra `frontend/index.html` com Go Live. As chamadas da API serão direcionadas para `http://localhost:3000`.
+
+   O Go Live serve apenas o frontend. Para que login, categorias e receitas funcionem, mantenha `node server.js` rodando no terminal da pasta `Organizar_Receitas/backend`.
 
 ## Páginas
 - `index.html`: página inicial, categorias, receitas públicas, login e painel pessoal.
-- `admin.html`: área restrita para administrar receitas, níveis de usuário, categorias e conteúdo da página inicial.
+- `admin.html`: área restrita para administrar receitas, níveis de usuário, categorias e textos e imagens de todas as páginas, sem alterar o layout ou as funcionalidades.
 - `cadastro.html`: cadastro de usuário.
 - `minhas-receitas.html`: consulta, filtros, edição e exclusão das receitas do usuário.
 - `receita-form.html`: cadastro e edição de receita.
@@ -107,11 +111,13 @@ Receitas/
 | GET | `/api/receitas/minhas` | Autenticado | Lista receitas próprias, públicas e privadas |
 | GET | `/api/receitas/administracao` | Administrador | Lista receitas públicas e privadas de todas as contas |
 | GET | `/api/receitas/:id` | Público/autenticado | Consulta receita pública; privada pelo proprietário ou administrador |
+| POST | `/api/receitas/imagem` | Autenticado | Envia uma imagem local para usar em uma receita |
 | POST | `/api/receitas` | Autenticado | Cadastra receita para o usuário do token |
 | PUT | `/api/receitas/:id` | Proprietário ou administrador | Atualiza receita própria ou de qualquer usuário |
 | DELETE | `/api/receitas/:id` | Proprietário ou administrador | Exclui receita própria ou de qualquer usuário |
-| GET | `/api/configuracoes` | Público | Consulta o conteúdo configurável da página inicial |
-| PUT | `/api/configuracoes` | Administrador | Atualiza o título, subtítulo, descrição e imagem de destaque |
+| GET | `/api/configuracoes` | Público | Consulta os textos e as imagens configuráveis das páginas |
+| POST | `/api/configuracoes/imagem` | Administrador | Envia uma imagem local para o conteúdo das páginas |
+| PUT | `/api/configuracoes` | Administrador | Atualiza textos e imagens permitidos nas páginas existentes |
 
 As rotas protegidas recebem o token no cabeçalho:
 
@@ -134,9 +140,10 @@ Filtros opcionais de listagem:
 - Administradores podem consultar, editar e excluir qualquer receita. Usuários comuns só podem editar ou excluir as próprias receitas.
 - Administradores podem alterar níveis de acesso, mas não podem excluir contas nem remover o próprio nível administrativo.
 - Categorias em uso por receitas ou vídeos não podem ser excluídas; a API retorna `409`.
-- As configurações visuais são armazenadas no banco e a imagem aceita somente URL HTTP/HTTPS.
+- Textos e imagens configuráveis das páginas são armazenados no banco; as imagens podem ser informadas por URL HTTP/HTTPS ou selecionadas do computador.
 - O frontend pede confirmação antes da exclusão.
-- A foto é informada por URL HTTP/HTTPS, pois o projeto ainda não implementa upload de arquivos.
+- Fotos podem ser informadas por link direto HTTP/HTTPS ou selecionadas do computador. O sistema aceita JPEG, PNG e WebP de até 5 MB; links para páginas de busca ou publicações não funcionam como imagem direta.
+- Os arquivos enviados ficam em `Organizar_Receitas/backend/uploads/` e não são incluídos no Git.
 - Ingredientes e modo de preparo podem ser escritos um por linha; os detalhes mostram listas e etapas.
 - Vídeos salvos já possuem modelagem no banco, mas o CRUD de vídeos não faz parte desta entrega.
 
@@ -149,7 +156,7 @@ Filtros opcionais de listagem:
 6. Tente editar e excluir uma receita da outra conta; ambas devem retornar `403`.
 7. Edite e exclua a própria receita; confirme as respostas `200`.
 8. Teste cadastro sem token (`401`), dados obrigatórios ausentes (`400`), ID inexistente (`404`) e usuário comum na rota administrativa (`403`).
-9. Entre com uma conta administradora e use `admin.html` para gerenciar perfis, receitas, categorias, subcategorias e configurações visuais; confirme que as alterações aparecem no site.
+9. Entre com uma conta administradora e use `admin.html` para gerenciar perfis, receitas, categorias, subcategorias e os textos e imagens de todas as páginas; confirme que as alterações aparecem no site.
 10. Tente excluir uma categoria que esteja em uso e confirme a resposta `409`; tente remover seu próprio perfil administrativo e confirme a recusa.
 11. Acesse `/api/health` para verificar a conexão com o MySQL.
 
@@ -159,3 +166,4 @@ Filtros opcionais de listagem:
 - JWT validado no backend e usuário recarregado do banco a cada requisição protegida.
 - Regras de propriedade aplicadas no backend; esconder botões no frontend não é considerado controle de acesso.
 - Entradas obrigatórias, categoria, subcategoria, privacidade e URL da foto validadas na API.
+- Upload de imagens limitado a JPEG, PNG e WebP, com verificação da assinatura do arquivo e limite de 5 MB.

@@ -10,31 +10,33 @@
   <header class="topo-site">
     <a class="marca" href="index.html" aria-label="Página inicial do Organizador de Receitas">
       <span class="marca-icone" aria-hidden="true">OR</span>
-      <span>Organizador de Receitas</span>
+      <span data-conteudo="nome_site">Organizador de Receitas</span>
     </a>
   </header>
   <main>
     <section class="area-conta cadastro" id="conta">
       <div class="painel-login">
         <div class="boas-vindas">
-          <p class="subtitulo">Comece agora</p>
-          <h1>Crie seu caderno de receitas.</h1>
-          <p>Guarde as receitas que marcaram sua cozinha e tenha tudo organizado em um só lugar.</p>
+          <p class="subtitulo" data-conteudo="cadastro_subtitulo">Comece agora</p>
+          <h1 data-conteudo="cadastro_titulo">Crie seu caderno de receitas.</h1>
+          <p data-conteudo="cadastro_descricao">Cadastre suas receitas e mantenha tudo organizado em um só lugar.</p>
         </div>
         <div class="formulario-conta">
           <form id="form-cadastro">
-            <h2>Criar sua conta</h2>
+            <h2 data-conteudo="cadastro_form_titulo">Criar sua conta</h2>
             <label>Nome<input type="text" id="cadastro-nome" required maxlength="100" autocomplete="name" placeholder="Seu nome"></label>
             <label>Email<input type="email" id="cadastro-email" required maxlength="150" autocomplete="email" placeholder="seuemail@email.com"></label>
             <label>Senha<input type="password" id="cadastro-senha" required minlength="6" autocomplete="new-password" placeholder="Mínimo de 6 caracteres"></label>
             <label>Confirmar senha<input type="password" id="cadastro-confirmar-senha" required minlength="6" autocomplete="new-password" placeholder="Digite a senha novamente"></label>
-            <button type="submit">Cadastrar</button>
-            <p class="troca-formulario">Já possui uma conta?</p>
-            <a class="botao-secundario" href="index.html">Voltar para o login</a>
+            <button type="submit" data-conteudo="cadastro_botao">Cadastrar</button>
+            <p class="troca-formulario" data-conteudo="cadastro_login_prompt">Já possui uma conta?</p>
+            <a class="botao-secundario" href="index.html" data-conteudo="cadastro_login_link">Voltar para o login</a>
             <p id="mensagem-cadastro" role="status"></p>
           </form>
         </div>
-        <aside class="painel-ilustracao" aria-label="Receitas caseiras"></aside>
+        <aside class="painel-ilustracao" aria-label="Receitas caseiras">
+          <img id="foto-cadastro" data-conteudo-src="foto_cadastro" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" alt="Prato caseiro servido à mesa">
+        </aside>
       </div>
     </section>
   </main>

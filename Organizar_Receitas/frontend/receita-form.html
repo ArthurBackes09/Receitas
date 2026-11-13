@@ -8,24 +8,24 @@
 </head>
 <body data-page="form-receita">
   <header class="topo-site">
-    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span data-conteudo="nome_site">Organizador de Receitas</span></a>
     <nav class="menu-principal" aria-label="Navegação principal">
-      <a href="index.html">Início</a>
-      <a href="minhas-receitas.html">Minhas receitas</a>
-      <button class="botao-nav botao-sair" id="botao-sair" type="button">Sair</button>
+      <a href="index.html" data-conteudo="nav_inicio">Início</a>
+      <a href="minhas-receitas.html" data-conteudo="nav_minhas">Minhas receitas</a>
+      <button class="botao-nav botao-sair" id="botao-sair" data-conteudo="nav_sair" type="button">Sair</button>
     </nav>
   </header>
   <main class="pagina-conteudo pagina-formulario">
     <div class="cabecalho-pagina">
       <div>
-        <p class="sobretitulo">Seu caderno digital</p>
-        <h1 id="titulo-pagina-form">Uma receita para guardar</h1>
-        <p>Preencha os detalhes para deixar seu preparo organizado.</p>
+        <p class="sobretitulo" data-conteudo="form_subtitulo">Seu caderno digital</p>
+        <h1 id="titulo-pagina-form" data-conteudo="form_titulo">Uma receita para guardar</h1>
+        <p data-conteudo="form_descricao">Preencha os detalhes para deixar seu preparo organizado.</p>
       </div>
     </div>
     <form id="form-receita" class="formulario formulario-receita" novalidate>
       <fieldset>
-        <legend>Sobre a receita</legend>
+        <legend data-conteudo="form_sobre">Sobre a receita</legend>
         <label>Título *
           <input id="receita-titulo" name="titulo" type="text" maxlength="150" required placeholder="Ex.: Torta de maçã da família">
         </label>
@@ -42,7 +42,7 @@
         </div>
       </fieldset>
       <fieldset>
-        <legend>Ingredientes e preparo</legend>
+        <legend data-conteudo="form_preparo">Ingredientes e preparo</legend>
         <label>Ingredientes *
           <textarea id="receita-ingredientes" name="ingredientes" rows="7" required placeholder="Digite um ingrediente por linha"></textarea>
           <span class="ajuda-campo">Separe cada ingrediente em uma linha.</span>
@@ -53,10 +53,12 @@
         </label>
       </fieldset>
       <fieldset>
-        <legend>Imagem e visibilidade</legend>
-        <label>Link de uma foto (opcional)
-          <input id="receita-foto" name="foto" type="url" maxlength="255" placeholder="https://exemplo.com/foto.jpg">
-          <span class="ajuda-campo">O sistema atual aceita um link HTTP/HTTPS; envio de arquivo não está configurado.</span>
+        <legend data-conteudo="form_imagem">Imagem e visibilidade</legend>
+        <label>Link direto da foto (opcional)
+          <input id="receita-foto" name="foto" type="text" maxlength="255" placeholder="https://exemplo.com/foto.jpg">
+          <span class="ajuda-campo">Use um link direto para a imagem, não uma página de busca ou publicação.</span>
+          <span class="ajuda-campo">Ou escolha uma imagem do computador (JPEG, PNG ou WebP; até 5 MB):</span>
+          <input id="receita-arquivo-foto" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Escolher imagem da receita">
         </label>
         <div id="previa-foto" class="previa-foto" hidden></div>
         <label>Privacidade *
@@ -68,8 +70,8 @@
       </fieldset>
       <p id="mensagem-form-receita" class="mensagem" role="status"></p>
       <div class="acoes-formulario">
-        <a class="botao-secundario-link" href="minhas-receitas.html">Cancelar</a>
-        <button type="submit" id="botao-salvar-receita">Salvar receita</button>
+        <a class="botao-secundario-link" href="minhas-receitas.html" data-conteudo="form_cancelar">Cancelar</a>
+        <button type="submit" id="botao-salvar-receita" data-conteudo="form_salvar">Salvar receita</button>
       </div>
     </form>
   </main>

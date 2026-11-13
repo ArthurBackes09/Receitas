@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Organize e descubra receitas feitas por quem ama cozinhar.">
+  <meta name="description" content="Organize suas receitas em um só lugar e encontre novas ideias para cozinhar." data-conteudo="descricao" data-conteudo-atributo="content">
   <title>Organizador de Receitas</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,31 +11,31 @@
   <header class="topo-site">
     <a class="marca" href="index.html">
       <span class="marca-icone" aria-hidden="true">OR</span>
-      <span>Organizador de Receitas</span>
+      <span data-conteudo="nome_site">Organizador de Receitas</span>
     </a>
     <nav class="menu-principal" aria-label="Navegação principal">
-      <a href="#categorias">Categorias</a>
-      <a href="#receitas-publicas">Explorar receitas</a>
-      <a href="#acesso-conta" id="link-entrar">Entrar</a>
-      <a href="minhas-receitas.html" id="link-minhas" hidden>Minhas receitas</a>
-      <a href="admin.html" id="link-admin" hidden>Administração</a>
-      <a class="botao-nav" href="receita-form.html" id="link-nova" hidden>＋ Nova receita</a>
-      <button class="botao-nav botao-sair" id="botao-sair" type="button" hidden>Sair</button>
+      <a href="#categorias" data-conteudo="nav_categorias">Categorias</a>
+      <a href="#receitas-publicas" data-conteudo="nav_explorar">Explorar receitas</a>
+      <a href="#acesso-conta" id="link-entrar" data-conteudo="nav_entrar">Entrar</a>
+      <a href="minhas-receitas.html" id="link-minhas" data-conteudo="nav_minhas" hidden>Minhas receitas</a>
+      <a href="admin.html" id="link-admin" data-conteudo="nav_admin" hidden>Administração</a>
+      <a class="botao-nav" href="receita-form.html" id="link-nova" data-conteudo="nav_nova" hidden>＋ Nova receita</a>
+      <button class="botao-nav botao-sair" id="botao-sair" data-conteudo="nav_sair" type="button" hidden>Sair</button>
     </nav>
   </header>
 
   <main>
     <section class="hero">
       <div class="hero-conteudo">
-        <p class="sobretitulo" id="hero-subtitulo">Seu caderno, seus sabores</p>
-        <h1 id="hero-titulo">Todas as suas receitas favoritas em um só lugar.</h1>
-        <p id="hero-descricao">Guarde suas criações, organize cada preparo e descubra receitas compartilhadas por outros cozinheiros.</p>
+        <p class="sobretitulo" id="hero-subtitulo" data-conteudo="subtitulo">Seu caderno, seus sabores</p>
+        <h1 id="hero-titulo" data-conteudo="titulo">Todas as suas receitas favoritas em um só lugar.</h1>
+        <p id="hero-descricao" data-conteudo="descricao">Organize suas receitas em um só lugar e encontre novas ideias para cozinhar.</p>
         <div class="hero-acoes">
-          <a class="botao-principal" href="#receitas-publicas">Explorar receitas</a>
-          <a class="botao-secundario-link" href="#acesso-conta" id="hero-entrar">Acessar minha conta</a>
+          <a class="botao-principal" href="#receitas-publicas" data-conteudo="inicio_explorar">Explorar receitas</a>
+          <a class="botao-secundario-link" href="#acesso-conta" id="hero-entrar" data-conteudo="inicio_acessar">Acessar minha conta</a>
         </div>
       </div>
-      <div class="hero-foto"><img id="foto-destaque" src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Mesa com um prato caseiro colorido"></div>
+      <div class="hero-foto"><img id="foto-destaque" data-conteudo-src="foto_destaque" src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Mesa com um prato caseiro colorido"></div>
     </section>
 
     <p id="mensagem-configuracoes" class="mensagem" role="status"></p>
@@ -48,8 +48,8 @@
           <p>Você tem <strong id="quantidade-receitas">0 receitas</strong> no seu caderno.</p>
         </div>
         <div class="painel-atalhos">
-          <a class="botao-principal" href="receita-form.html">＋ Cadastrar receita</a>
-          <a class="botao-secundario-link" href="minhas-receitas.html">Administrar minhas receitas</a>
+          <a class="botao-principal" href="receita-form.html" data-conteudo="minhas_botao">＋ Cadastrar receita</a>
+          <a class="botao-secundario-link" href="minhas-receitas.html" data-conteudo="minhas_ver">Ver minhas receitas</a>
         </div>
       </div>
       <p id="mensagem-painel" class="mensagem" role="status"></p>
@@ -83,8 +83,8 @@
     <section class="secao" id="categorias">
       <div class="cabecalho-secao">
         <div>
-          <p class="sobretitulo">Organize por sabor</p>
-          <h2>Explore as categorias</h2>
+          <p class="sobretitulo" data-conteudo="categorias_subtitulo">Organize por sabor</p>
+          <h2 data-conteudo="categorias_titulo">Explore as categorias</h2>
         </div>
       </div>
       <div class="lista-categorias" id="lista-categorias" aria-live="polite"></div>
@@ -93,8 +93,8 @@
     <section class="secao" id="receitas-publicas">
       <div class="cabecalho-secao cabecalho-com-filtro">
         <div>
-          <p class="sobretitulo">Inspire-se para a próxima refeição</p>
-          <h2>Receitas da comunidade</h2>
+          <p class="sobretitulo" data-conteudo="receitas_subtitulo">Inspire-se para a próxima refeição</p>
+          <h2 data-conteudo="receitas_titulo">Receitas da comunidade</h2>
         </div>
         <div class="filtros">
           <label class="campo-pesquisa">Pesquisar
@@ -112,10 +112,10 @@
     <section class="secao secao-login" id="acesso-conta">
       <div class="cartao-login">
         <div>
-          <p class="sobretitulo">Tenha seu espaço</p>
-          <h2>Entre no seu caderno</h2>
-          <p>Faça login para organizar suas receitas e acompanhar suas criações.</p>
-          <a href="cadastro.html">Ainda não tem uma conta? Cadastre-se</a>
+          <p class="sobretitulo" data-conteudo="login_subtitulo">Tenha seu espaço</p>
+          <h2 data-conteudo="login_titulo">Entre no seu caderno</h2>
+          <p data-conteudo="login_descricao">Faça login para organizar suas receitas e acompanhar suas criações.</p>
+          <a href="cadastro.html" data-conteudo="login_cadastro">Ainda não tem uma conta? Cadastre-se</a>
         </div>
         <form id="form-login" class="formulario">
           <label>Email
@@ -124,7 +124,7 @@
           <label>Senha
             <input type="password" id="login-senha" required autocomplete="current-password" placeholder="Digite sua senha">
           </label>
-          <button type="submit">Entrar</button>
+          <button type="submit" data-conteudo="login_botao">Entrar</button>
           <p id="mensagem-login" class="mensagem" role="status"></p>
         </form>
       </div>
@@ -132,8 +132,8 @@
   </main>
 
   <footer class="rodape">
-    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
-    <p>Um caderno digital para guardar e compartilhar bons sabores.</p>
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span data-conteudo="nome_site">Organizador de Receitas</span></a>
+    <p data-conteudo="texto_rodape">Um caderno digital para guardar e compartilhar bons sabores.</p>
   </footer>
 
   <script src="js/script.js"></script>

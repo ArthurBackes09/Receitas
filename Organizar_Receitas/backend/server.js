@@ -14,6 +14,7 @@ const porta = process.env.PORT || 3000;
 
 app.use(corsMiddleware);
 app.use(express.json({ limit: '1mb' }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { dotfiles: 'deny', index: false }));
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 app.get('/api/health', async (req, res) => {

@@ -1,4 +1,150 @@
+const API_BASE_URL = window.location.protocol === 'http:' &&
+  window.location.port &&
+  window.location.port !== '3000'
+  ? `http://${window.location.hostname}:3000`
+  : '';
+
+const camposConteudoSite = [
+  { grupo: 'Identidade e navegação', chave: 'nome_site', rotulo: 'Nome do site', maximo: 80 },
+  { grupo: 'Identidade e navegação', chave: 'texto_rodape', rotulo: 'Texto do rodapé', maximo: 180 },
+  { grupo: 'Identidade e navegação', chave: 'nav_categorias', rotulo: 'Menu: categorias', maximo: 50 },
+  { grupo: 'Identidade e navegação', chave: 'nav_explorar', rotulo: 'Menu: explorar receitas', maximo: 60 },
+  { grupo: 'Identidade e navegação', chave: 'nav_inicio', rotulo: 'Menu: início', maximo: 40 },
+  { grupo: 'Identidade e navegação', chave: 'nav_entrar', rotulo: 'Menu: entrar', maximo: 40 },
+  { grupo: 'Identidade e navegação', chave: 'nav_minhas', rotulo: 'Menu: minhas receitas', maximo: 60 },
+  { grupo: 'Identidade e navegação', chave: 'nav_admin', rotulo: 'Menu: administração', maximo: 60 },
+  { grupo: 'Identidade e navegação', chave: 'nav_nova', rotulo: 'Menu: nova receita', maximo: 60 },
+  { grupo: 'Identidade e navegação', chave: 'nav_sair', rotulo: 'Menu: sair', maximo: 40 },
+  { grupo: 'Início', chave: 'subtitulo', rotulo: 'Subtítulo principal', maximo: 150 },
+  { grupo: 'Início', chave: 'titulo', rotulo: 'Título principal', maximo: 100 },
+  { grupo: 'Início', chave: 'descricao', rotulo: 'Descrição principal', maximo: 500, tipo: 'textarea' },
+  { grupo: 'Início', chave: 'foto_destaque', rotulo: 'URL ou imagem principal', maximo: 500, tipo: 'text', imagem: true },
+  { grupo: 'Início', chave: 'inicio_explorar', rotulo: 'Botão para explorar receitas', maximo: 60 },
+  { grupo: 'Início', chave: 'inicio_acessar', rotulo: 'Botão para acessar a conta', maximo: 60 },
+  { grupo: 'Início', chave: 'categorias_subtitulo', rotulo: 'Subtítulo das categorias', maximo: 100 },
+  { grupo: 'Início', chave: 'categorias_titulo', rotulo: 'Título das categorias', maximo: 100 },
+  { grupo: 'Início', chave: 'receitas_subtitulo', rotulo: 'Subtítulo das receitas públicas', maximo: 100 },
+  { grupo: 'Início', chave: 'receitas_titulo', rotulo: 'Título das receitas públicas', maximo: 100 },
+  { grupo: 'Início', chave: 'login_subtitulo', rotulo: 'Subtítulo do acesso', maximo: 100 },
+  { grupo: 'Início', chave: 'login_titulo', rotulo: 'Título do acesso', maximo: 120 },
+  { grupo: 'Início', chave: 'login_descricao', rotulo: 'Descrição do acesso', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Início', chave: 'login_cadastro', rotulo: 'Link para cadastro', maximo: 100 },
+  { grupo: 'Início', chave: 'login_botao', rotulo: 'Botão de entrar', maximo: 40 },
+  { grupo: 'Cadastro', chave: 'foto_cadastro', rotulo: 'URL ou imagem de cadastro', maximo: 500, tipo: 'text', imagem: true },
+  { grupo: 'Cadastro', chave: 'cadastro_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
+  { grupo: 'Cadastro', chave: 'cadastro_titulo', rotulo: 'Título', maximo: 120 },
+  { grupo: 'Cadastro', chave: 'cadastro_descricao', rotulo: 'Descrição', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Cadastro', chave: 'cadastro_form_titulo', rotulo: 'Título do formulário', maximo: 100 },
+  { grupo: 'Cadastro', chave: 'cadastro_botao', rotulo: 'Botão de cadastro', maximo: 60 },
+  { grupo: 'Cadastro', chave: 'cadastro_login_prompt', rotulo: 'Texto de retorno ao login', maximo: 100 },
+  { grupo: 'Cadastro', chave: 'cadastro_login_link', rotulo: 'Link de retorno ao login', maximo: 100 },
+  { grupo: 'Minhas receitas', chave: 'minhas_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
+  { grupo: 'Minhas receitas', chave: 'minhas_titulo', rotulo: 'Título', maximo: 120 },
+  { grupo: 'Minhas receitas', chave: 'minhas_descricao', rotulo: 'Descrição', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Minhas receitas', chave: 'minhas_botao', rotulo: 'Botão para cadastrar receita', maximo: 60 },
+  { grupo: 'Minhas receitas', chave: 'minhas_ver', rotulo: 'Botão para ver receitas', maximo: 60 },
+  { grupo: 'Formulário de receita', chave: 'form_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
+  { grupo: 'Formulário de receita', chave: 'form_titulo', rotulo: 'Título', maximo: 120 },
+  { grupo: 'Formulário de receita', chave: 'form_descricao', rotulo: 'Descrição', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Formulário de receita', chave: 'form_sobre', rotulo: 'Seção: sobre a receita', maximo: 100 },
+  { grupo: 'Formulário de receita', chave: 'form_preparo', rotulo: 'Seção: ingredientes e preparo', maximo: 100 },
+  { grupo: 'Formulário de receita', chave: 'form_imagem', rotulo: 'Seção: imagem e visibilidade', maximo: 100 },
+  { grupo: 'Formulário de receita', chave: 'form_cancelar', rotulo: 'Botão cancelar', maximo: 60 },
+  { grupo: 'Formulário de receita', chave: 'form_salvar', rotulo: 'Botão salvar', maximo: 60 },
+  { grupo: 'Detalhes da receita', chave: 'detalhe_voltar', rotulo: 'Link para voltar', maximo: 80 },
+  { grupo: 'Detalhes da receita', chave: 'detalhe_ingredientes', rotulo: 'Título dos ingredientes', maximo: 60 },
+  { grupo: 'Detalhes da receita', chave: 'detalhe_preparo', rotulo: 'Título do preparo', maximo: 60 },
+  { grupo: 'Detalhes da receita', chave: 'detalhe_editar', rotulo: 'Botão editar', maximo: 60 },
+  { grupo: 'Detalhes da receita', chave: 'detalhe_excluir', rotulo: 'Botão excluir', maximo: 60 },
+  { grupo: 'Administração', chave: 'admin_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
+  { grupo: 'Administração', chave: 'admin_titulo', rotulo: 'Título', maximo: 120 },
+  { grupo: 'Administração', chave: 'admin_descricao', rotulo: 'Descrição', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Administração', chave: 'admin_receitas', rotulo: 'Seção de receitas', maximo: 60 },
+  { grupo: 'Administração', chave: 'admin_receitas_descricao', rotulo: 'Descrição da seção de receitas', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Administração', chave: 'admin_usuarios', rotulo: 'Seção de usuários', maximo: 60 },
+  { grupo: 'Administração', chave: 'admin_usuarios_descricao', rotulo: 'Descrição da seção de usuários', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Administração', chave: 'admin_categorias', rotulo: 'Seção de categorias', maximo: 100 },
+  { grupo: 'Administração', chave: 'admin_conteudo', rotulo: 'Seção de conteúdo', maximo: 100 },
+  { grupo: 'Administração', chave: 'admin_conteudo_descricao', rotulo: 'Descrição da seção de conteúdo', maximo: 250, tipo: 'textarea' }
+];
+
+let configuracoesSite = {};
+
 const tokenAtual = () => localStorage.getItem('tokenReceitas');
+
+function imagemLocalValida(valor) {
+  return /^\/uploads\/(receitas|site)\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|png|webp)$/i.test(valor);
+}
+
+function imagemParaExibicao(valor) {
+  return valor.startsWith('/uploads/') ? `${API_BASE_URL}${valor}` : valor;
+}
+
+function resolverImagemExibicao(valor) {
+  if (imagemLocalValida(valor)) return imagemParaExibicao(valor);
+  if (valor.startsWith('blob:')) return valor;
+  try {
+    const url = new URL(valor);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+  } catch (erro) {
+    return null;
+  }
+}
+
+function atualizarPreviaImagemConteudo(previa, valor) {
+  previa.replaceChildren();
+  const src = resolverImagemExibicao(valor);
+  if (!src) {
+    previa.hidden = true;
+    return;
+  }
+
+  const imagem = document.createElement('img');
+  imagem.alt = 'Prévia da imagem selecionada';
+  const erro = document.createElement('span');
+  erro.className = 'ajuda-campo';
+  erro.textContent = 'Não foi possível carregar esta imagem. Confira o link ou selecione outro arquivo.';
+  erro.hidden = true;
+  imagem.addEventListener('error', () => {
+    imagem.hidden = true;
+    erro.hidden = false;
+  }, { once: true });
+  imagem.addEventListener('load', () => {
+    imagem.hidden = false;
+    erro.hidden = true;
+  }, { once: true });
+  previa.append(imagem, erro);
+  previa.hidden = false;
+  imagem.src = src;
+}
+
+function textoConfiguravel(chave, padrao) {
+  return typeof configuracoesSite[chave] === 'string' ? configuracoesSite[chave] : padrao;
+}
+
+function aplicarConfiguracoesNaPagina(configuracoes) {
+  configuracoesSite = { ...configuracoesSite, ...configuracoes };
+  document.querySelectorAll('[data-conteudo]').forEach((elemento) => {
+    const valor = configuracoes[elemento.dataset.conteudo];
+    if (typeof valor !== 'string' || !valor) return;
+    const atributo = elemento.dataset.conteudoAtributo;
+    if (atributo) elemento.setAttribute(atributo, valor);
+    else elemento.textContent = valor;
+  });
+
+  document.querySelectorAll('[data-conteudo-src]').forEach((elemento) => {
+    const valor = configuracoes[elemento.dataset.conteudoSrc];
+    if (typeof valor !== 'string') return;
+    const src = resolverImagemExibicao(valor);
+    if (src) {
+      elemento.hidden = false;
+      elemento.onerror = () => {
+        elemento.hidden = true;
+      };
+      elemento.src = src;
+    }
+  });
+}
 
 async function lerResposta(resposta) {
   const texto = await resposta.text();
@@ -7,23 +153,35 @@ async function lerResposta(resposta) {
     return JSON.parse(texto);
   } catch (erro) {
     if (resposta.headers.get('content-type')?.includes('text/html')) {
-      return { mensagem: 'O backend não respondeu à API. Inicie-o com "npm start" na pasta Organizar_Receitas.' };
+      return { mensagem: 'O backend não respondeu à API. Abra a pasta backend no terminal e execute "node server.js".' };
     }
     return { mensagem: texto };
   }
 }
 
+function testarCarregamentoImagem(url) {
+  return new Promise((resolver) => {
+    const imagem = new Image();
+    imagem.addEventListener('load', () => resolver(true), { once: true });
+    imagem.addEventListener('error', () => resolver(false), { once: true });
+    imagem.src = imagemParaExibicao(url);
+  });
+}
+
 async function requisitar(url, opcoes = {}) {
   const cabecalhos = { ...(opcoes.headers || {}) };
-  if (opcoes.body !== undefined) cabecalhos['Content-Type'] = 'application/json';
+  const corpoMultipart = typeof FormData !== 'undefined' && opcoes.body instanceof FormData;
+  if (opcoes.body !== undefined && !corpoMultipart) cabecalhos['Content-Type'] = 'application/json';
   if (opcoes.autenticada !== false && tokenAtual()) {
     cabecalhos.Authorization = `Bearer ${tokenAtual()}`;
   }
 
-  const resposta = await fetch(url, {
+  const resposta = await fetch(`${API_BASE_URL}${url}`, {
     method: opcoes.method || 'GET',
     headers: cabecalhos,
-    body: opcoes.body === undefined ? undefined : JSON.stringify(opcoes.body)
+    body: opcoes.body === undefined
+      ? undefined
+      : (corpoMultipart ? opcoes.body : JSON.stringify(opcoes.body))
   });
   const conteudo = await lerResposta(resposta);
   if (!resposta.ok) {
@@ -32,6 +190,32 @@ async function requisitar(url, opcoes = {}) {
     throw erro;
   }
   return conteudo;
+}
+
+async function enviarImagem(arquivo, rota) {
+  const corpo = new FormData();
+  corpo.append('imagem', arquivo);
+  return requisitar(rota, { method: 'POST', body: corpo });
+}
+
+function inicializarPreviaFotoLocal() {
+  const foto = document.querySelector('#receita-foto');
+  const arquivoFoto = document.querySelector('#receita-arquivo-foto');
+  if (!foto || !arquivoFoto || arquivoFoto.dataset.previaInicializada) return;
+
+  arquivoFoto.dataset.previaInicializada = 'true';
+  foto.addEventListener('input', () => {
+    if (arquivoFoto.dataset.urlPrevia) URL.revokeObjectURL(arquivoFoto.dataset.urlPrevia);
+    delete arquivoFoto.dataset.urlPrevia;
+    atualizarPreviaFoto(foto.value.trim());
+  });
+  arquivoFoto.addEventListener('change', () => {
+    const arquivo = arquivoFoto.files[0];
+    if (!arquivo) return;
+    if (arquivoFoto.dataset.urlPrevia) URL.revokeObjectURL(arquivoFoto.dataset.urlPrevia);
+    arquivoFoto.dataset.urlPrevia = URL.createObjectURL(arquivo);
+    atualizarPreviaFoto(arquivoFoto.dataset.urlPrevia);
+  });
 }
 
 function mostrarMensagem(elemento, texto, tipo = '') {
@@ -46,7 +230,7 @@ function criarImagem(src, alt) {
   area.className = 'imagem-receita';
   if (src) {
     const imagem = document.createElement('img');
-    imagem.src = src;
+    imagem.src = imagemParaExibicao(src);
     imagem.alt = alt;
     imagem.loading = 'lazy';
     imagem.addEventListener('error', () => imagem.remove(), { once: true });
@@ -163,7 +347,11 @@ async function excluirReceita(id, cartao) {
 
 async function carregarCategorias(selects = []) {
   const resultado = await requisitar('/api/categorias', { autenticada: false });
-  const categorias = resultado.categorias || [];
+  const categorias = (resultado.categorias || []).sort((a, b) => {
+    if (a.nome === 'Outros') return 1;
+    if (b.nome === 'Outros') return -1;
+    return a.nome.localeCompare(b.nome, 'pt-BR');
+  });
   const lista = document.querySelector('#lista-categorias');
   if (lista) {
     lista.replaceChildren();
@@ -195,14 +383,8 @@ async function carregarCategorias(selects = []) {
 async function carregarConfiguracoesSite() {
   const resultado = await requisitar('/api/configuracoes', { autenticada: false });
   const configuracoes = resultado.configuracoes || {};
-  const titulo = document.querySelector('#hero-titulo');
-  const subtitulo = document.querySelector('#hero-subtitulo');
-  const descricao = document.querySelector('#hero-descricao');
-  const foto = document.querySelector('#foto-destaque');
-  if (titulo && configuracoes.titulo) titulo.textContent = configuracoes.titulo;
-  if (subtitulo && configuracoes.subtitulo) subtitulo.textContent = configuracoes.subtitulo;
-  if (descricao && configuracoes.descricao) descricao.textContent = configuracoes.descricao;
-  if (foto && configuracoes.foto_destaque) foto.src = configuracoes.foto_destaque;
+  aplicarConfiguracoesNaPagina(configuracoes);
+  return configuracoes;
 }
 
 async function carregarPublicas() {
@@ -351,7 +533,7 @@ function inicializarLogin() {
       mostrarMensagem(mensagem, erro.message, 'erro');
     } finally {
       botao.disabled = false;
-      botao.textContent = 'Entrar';
+      botao.textContent = textoConfiguravel('login_botao', 'Entrar');
     }
   });
 
@@ -394,7 +576,7 @@ function inicializarCadastro() {
       mostrarMensagem(mensagem, erro.message, 'erro');
     } finally {
       botao.disabled = false;
-      botao.textContent = 'Cadastrar';
+      botao.textContent = textoConfiguravel('cadastro_botao', 'Cadastrar');
     }
   });
 }
@@ -445,6 +627,7 @@ async function inicializarFormularioReceita() {
   const botaoSalvar = document.querySelector('#botao-salvar-receita');
   const categoria = document.querySelector('#receita-categoria');
   const foto = document.querySelector('#receita-foto');
+  const arquivoFoto = document.querySelector('#receita-arquivo-foto');
 
   try {
     await requisitar('/api/usuarios/eu');
@@ -474,7 +657,22 @@ async function inicializarFormularioReceita() {
   categoria.addEventListener('change', () => carregarSubcategorias(categoria.value).catch((erro) => {
     mostrarMensagem(mensagem, erro.message, 'erro');
   }));
-  foto.addEventListener('input', () => atualizarPreviaFoto(foto.value));
+  foto.addEventListener('input', () => mostrarMensagem(mensagem, ''));
+  arquivoFoto.addEventListener('change', async () => {
+    const arquivo = arquivoFoto.files[0];
+    if (!arquivo) return;
+    try {
+      const resultado = await enviarImagem(arquivo, '/api/receitas/imagem');
+      if (arquivoFoto.dataset.urlPrevia) URL.revokeObjectURL(arquivoFoto.dataset.urlPrevia);
+      delete arquivoFoto.dataset.urlPrevia;
+      foto.value = resultado.url;
+      atualizarPreviaFoto(foto.value);
+      arquivoFoto.value = '';
+      mostrarMensagem(mensagem, 'Imagem enviada. Salve a receita para concluir.', 'sucesso');
+    } catch (erro) {
+      mostrarMensagem(mensagem, erro.message, 'erro');
+    }
+  });
 
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
@@ -493,6 +691,13 @@ async function inicializarFormularioReceita() {
       mostrarMensagem(mensagem, 'Preencha título, ingredientes, modo de preparo e categoria.', 'erro');
       return;
     }
+    if (dados.foto && !imagemLocalValida(dados.foto)) {
+      const imagemCarregou = await testarCarregamentoImagem(dados.foto);
+      if (!imagemCarregou) {
+        mostrarMensagem(mensagem, 'Este link não abriu uma imagem. Use um link direto para a foto ou selecione um arquivo do computador.', 'erro');
+        return;
+      }
+    }
     botaoSalvar.disabled = true;
     botaoSalvar.textContent = 'Salvando...';
     try {
@@ -506,7 +711,7 @@ async function inicializarFormularioReceita() {
       mostrarMensagem(mensagem, erro.message, 'erro');
     } finally {
       botaoSalvar.disabled = false;
-      botaoSalvar.textContent = id ? 'Salvar alterações' : 'Salvar receita';
+      botaoSalvar.textContent = id ? 'Salvar alterações' : textoConfiguravel('form_salvar', 'Salvar receita');
     }
   });
 }
@@ -519,14 +724,29 @@ function atualizarPreviaFoto(url) {
     previa.hidden = true;
     return;
   }
+  const src = resolverImagemExibicao(url);
+  if (!src) {
+    previa.hidden = true;
+    return;
+  }
   try {
-    const endereco = new URL(url);
-    if (!['http:', 'https:'].includes(endereco.protocol)) throw new Error('URL inválida');
     const imagem = document.createElement('img');
-    imagem.src = endereco.href;
+    imagem.src = src;
     imagem.alt = 'Prévia da foto da receita';
-    imagem.addEventListener('error', () => mostrarMensagem(document.querySelector('#mensagem-form-receita'), 'Não foi possível carregar a prévia desta foto.', 'erro'), { once: true });
-    previa.append(imagem);
+    const aviso = document.createElement('span');
+    aviso.className = 'ajuda-campo';
+    aviso.textContent = 'Prévia indisponível. Confira o link ou escolha outro arquivo.';
+    aviso.hidden = true;
+    imagem.addEventListener('error', () => {
+      imagem.hidden = true;
+      aviso.hidden = false;
+      mostrarMensagem(
+        document.querySelector('#mensagem-form-receita'),
+        'Não foi possível carregar esta imagem. Use um link direto para a foto ou escolha um arquivo do computador.',
+        'erro'
+      );
+    }, { once: true });
+    previa.append(imagem, aviso);
     previa.hidden = false;
   } catch (erro) {
     previa.hidden = true;
@@ -605,7 +825,6 @@ async function carregarReceitasAdmin() {
 
   const resultado = await requisitar(`/api/receitas/administracao?${parametros}`);
   renderizarReceitas(container, resultado.receitas || [], {
-    proprietaria: true,
     podeGerenciar: true,
     mostrarPrivacidade: true,
     vazioTitulo: 'Nenhuma receita encontrada',
@@ -789,13 +1008,91 @@ async function carregarSubcategoriasAdmin() {
   });
 }
 
+function criarCamposConfiguracoesAdmin(configuracoes) {
+  const container = document.querySelector('#campos-configuracoes-admin');
+  container.replaceChildren();
+  const grupos = new Map();
+
+  camposConteudoSite.forEach((campo) => {
+    let grupo = grupos.get(campo.grupo);
+    if (!grupo) {
+      grupo = document.createElement('details');
+      grupo.className = 'grupo-conteudo-site';
+      grupo.open = grupos.size === 0;
+      const titulo = document.createElement('summary');
+      titulo.textContent = campo.grupo;
+      const campos = document.createElement('div');
+      campos.className = 'grade-campos-conteudo';
+      grupo.append(titulo, campos);
+      grupos.set(campo.grupo, campos);
+      container.append(grupo);
+    }
+
+    const rotulo = document.createElement('label');
+    rotulo.className = 'campo-conteudo';
+    const texto = document.createElement('span');
+    texto.textContent = campo.rotulo;
+    const entrada = document.createElement(campo.tipo === 'textarea' ? 'textarea' : 'input');
+    if (campo.tipo !== 'textarea') entrada.type = campo.tipo || 'text';
+    entrada.id = `config-${campo.chave}`;
+    entrada.maxLength = campo.maximo;
+    entrada.required = true;
+    entrada.dataset.configuracao = campo.chave;
+    rotulo.append(texto, entrada);
+    if (campo.imagem) {
+      let urlPreviaArquivo = '';
+      const previa = document.createElement('div');
+      previa.className = 'previa-configuracao-imagem';
+      previa.hidden = true;
+      entrada.addEventListener('input', () => {
+        if (urlPreviaArquivo) URL.revokeObjectURL(urlPreviaArquivo);
+        urlPreviaArquivo = '';
+        atualizarPreviaImagemConteudo(previa, entrada.value.trim());
+      });
+      rotulo.append(previa);
+
+      const arquivo = document.createElement('input');
+      arquivo.type = 'file';
+      arquivo.accept = 'image/jpeg,image/png,image/webp';
+      arquivo.setAttribute('aria-label', `Selecionar imagem para ${campo.rotulo}`);
+      const ajuda = document.createElement('span');
+      ajuda.className = 'ajuda-campo';
+      ajuda.textContent = 'JPEG, PNG ou WebP; até 5 MB. Selecione um arquivo ou informe um link direto acima.';
+      arquivo.addEventListener('change', async () => {
+        if (!arquivo.files[0]) return;
+        if (urlPreviaArquivo) URL.revokeObjectURL(urlPreviaArquivo);
+        urlPreviaArquivo = URL.createObjectURL(arquivo.files[0]);
+        atualizarPreviaImagemConteudo(previa, urlPreviaArquivo);
+        try {
+          const resultado = await enviarImagem(arquivo.files[0], '/api/configuracoes/imagem');
+          entrada.value = resultado.url;
+          entrada.dispatchEvent(new Event('input'));
+          mostrarMensagem(
+            document.querySelector('#mensagem-configuracoes'),
+            'Imagem enviada. Salve as alterações para aplicá-la ao site.',
+            'sucesso'
+          );
+        } catch (erro) {
+          mostrarMensagem(document.querySelector('#mensagem-configuracoes'), erro.message, 'erro');
+        } finally {
+          arquivo.value = '';
+        }
+      });
+      rotulo.append(arquivo, ajuda);
+    }
+    grupo.append(rotulo);
+  });
+
+  camposConteudoSite.forEach((campo) => {
+    const entrada = document.querySelector(`#config-${campo.chave}`);
+    entrada.value = configuracoes[campo.chave] || '';
+    if (campo.imagem) entrada.dispatchEvent(new Event('input'));
+  });
+}
+
 async function carregarConfiguracoesAdmin() {
   const resultado = await requisitar('/api/configuracoes');
-  const configuracoes = resultado.configuracoes || {};
-  document.querySelector('#config-titulo').value = configuracoes.titulo || '';
-  document.querySelector('#config-subtitulo').value = configuracoes.subtitulo || '';
-  document.querySelector('#config-descricao').value = configuracoes.descricao || '';
-  document.querySelector('#config-foto-destaque').value = configuracoes.foto_destaque || '';
+  criarCamposConfiguracoesAdmin(resultado.configuracoes || {});
 }
 
 async function inicializarAdmin() {
@@ -850,14 +1147,14 @@ async function inicializarAdmin() {
   });
   document.querySelector('#form-configuracoes-admin').addEventListener('submit', async (evento) => {
     evento.preventDefault();
+    if (!evento.currentTarget.reportValidity()) return;
     try {
-      const configuracoes = {
-        titulo: document.querySelector('#config-titulo').value.trim(),
-        subtitulo: document.querySelector('#config-subtitulo').value.trim(),
-        descricao: document.querySelector('#config-descricao').value.trim(),
-        foto_destaque: document.querySelector('#config-foto-destaque').value.trim()
-      };
+      const configuracoes = {};
+      document.querySelectorAll('[data-configuracao]').forEach((entrada) => {
+        configuracoes[entrada.dataset.configuracao] = entrada.value.trim();
+      });
       const resposta = await requisitar('/api/configuracoes', { method: 'PUT', body: configuracoes });
+      aplicarConfiguracoesNaPagina(resposta.configuracoes || configuracoes);
       mostrarMensagem(mensagem, resposta.mensagem, 'sucesso');
     } catch (erro) {
       manejarErro(erro);
@@ -877,12 +1174,21 @@ async function inicializarAdmin() {
 }
 
 async function inicializar() {
+  if (document.body.dataset.page === 'form-receita') inicializarPreviaFotoLocal();
   inicializarLogin();
   inicializarCadastro();
   await inicializarSessao();
 
   const pagina = document.body.dataset.page;
   if (['minhas', 'form-receita', 'admin'].includes(pagina) && !tokenAtual()) return;
+  try {
+    await carregarConfiguracoesSite();
+  } catch (erro) {
+    const mensagem = document.querySelector(
+      '#mensagem-configuracoes, #mensagem-admin, #mensagem-minhas, #mensagem-form-receita, #mensagem-detalhes, #mensagem-cadastro, #mensagem-publicas'
+    );
+    if (mensagem) mostrarMensagem(mensagem, erro.message, 'erro');
+  }
   if (pagina === 'inicio') {
     inicializarPaginaInicial();
     try {
@@ -891,9 +1197,6 @@ async function inicializar() {
         categoria,
         document.querySelector('#filtro-categoria-painel')
       ]);
-      await carregarConfiguracoesSite().catch((erro) => {
-        mostrarMensagem(document.querySelector('#mensagem-configuracoes'), erro.message, 'erro');
-      });
       await carregarPublicas();
     } catch (erro) {
       mostrarMensagem(document.querySelector('#mensagem-publicas'), erro.message, 'erro');

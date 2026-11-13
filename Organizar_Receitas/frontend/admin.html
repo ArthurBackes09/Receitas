@@ -11,12 +11,12 @@
   <header class="topo-site">
     <a class="marca" href="index.html">
       <span class="marca-icone" aria-hidden="true">OR</span>
-      <span>Organizador de Receitas</span>
+      <span data-conteudo="nome_site">Organizador de Receitas</span>
     </a>
     <nav class="menu-principal" aria-label="Navegação principal">
-      <a href="index.html">Início</a>
-      <a href="minhas-receitas.html">Minhas receitas</a>
-      <button class="botao-nav botao-sair" id="botao-sair" type="button">Sair</button>
+      <a href="index.html" data-conteudo="nav_inicio">Início</a>
+      <a href="minhas-receitas.html" data-conteudo="nav_minhas">Minhas receitas</a>
+      <button class="botao-nav botao-sair" id="botao-sair" data-conteudo="nav_sair" type="button">Sair</button>
     </nav>
   </header>
 
@@ -24,17 +24,17 @@
     <a class="voltar-link" href="index.html">← Voltar ao site</a>
     <div class="cabecalho-pagina">
       <div>
-        <p class="sobretitulo">Gerenciamento do site</p>
-        <h1>Painel administrativo</h1>
-        <p>Gerencie receitas, perfis, categorias e o conteúdo da página inicial.</p>
+        <p class="sobretitulo" data-conteudo="admin_subtitulo">Gerenciamento do site</p>
+        <h1 data-conteudo="admin_titulo">Painel administrativo</h1>
+        <p data-conteudo="admin_descricao">Gerencie receitas, perfis, categorias e o conteúdo da página inicial.</p>
       </div>
     </div>
     <p id="mensagem-admin" class="mensagem" role="status" aria-live="polite"></p>
 
     <div id="conteudo-admin" hidden>
       <section class="painel-admin-secao" aria-labelledby="titulo-admin-receitas">
-        <h2 id="titulo-admin-receitas">Receitas</h2>
-        <p>Administradores podem editar ou excluir receitas de qualquer conta.</p>
+        <h2 id="titulo-admin-receitas" data-conteudo="admin_receitas">Receitas</h2>
+        <p data-conteudo="admin_receitas_descricao">Administradores podem editar ou excluir receitas de qualquer conta.</p>
         <div class="filtros filtros-pagina">
           <label>Pesquisar
             <input id="busca-admin-receitas" type="search" placeholder="Título ou descrição">
@@ -54,13 +54,13 @@
       </section>
 
       <section class="painel-admin-secao" aria-labelledby="titulo-admin-usuarios">
-        <h2 id="titulo-admin-usuarios">Usuários</h2>
-        <p>Altere o nível de acesso. As contas não podem ser excluídas por este painel.</p>
+        <h2 id="titulo-admin-usuarios" data-conteudo="admin_usuarios">Usuários</h2>
+        <p data-conteudo="admin_usuarios_descricao">Altere o nível de acesso. As contas não podem ser excluídas por este painel.</p>
         <div id="lista-admin-usuarios" class="lista-admin"></div>
       </section>
 
       <section class="painel-admin-secao" aria-labelledby="titulo-admin-categorias">
-        <h2 id="titulo-admin-categorias">Categorias e subcategorias</h2>
+        <h2 id="titulo-admin-categorias" data-conteudo="admin_categorias">Categorias e subcategorias</h2>
         <form id="form-categoria-admin" class="formulario formulario-admin">
           <label>Nova categoria
             <input id="nome-categoria-admin" type="text" maxlength="50" required>
@@ -84,20 +84,10 @@
       </section>
 
       <section class="painel-admin-secao" aria-labelledby="titulo-admin-conteudo">
-        <h2 id="titulo-admin-conteudo">Conteúdo visual da página inicial</h2>
+        <h2 id="titulo-admin-conteudo" data-conteudo="admin_conteudo">Conteúdo de todas as páginas</h2>
+        <p data-conteudo="admin_conteudo_descricao">Edite os textos e as imagens usados nas páginas do site. A estrutura e as funcionalidades serão mantidas.</p>
         <form id="form-configuracoes-admin" class="formulario formulario-admin">
-          <label>Título principal
-            <input id="config-titulo" type="text" maxlength="100" required>
-          </label>
-          <label>Subtítulo
-            <input id="config-subtitulo" type="text" maxlength="150" required>
-          </label>
-          <label>Descrição
-            <textarea id="config-descricao" rows="3" maxlength="500" required></textarea>
-          </label>
-          <label>URL da imagem de destaque
-            <input id="config-foto-destaque" type="url" maxlength="500" required>
-          </label>
+          <div id="campos-configuracoes-admin"></div>
           <button class="botao-principal" type="submit">Salvar conteúdo</button>
         </form>
       </section>
@@ -105,8 +95,8 @@
   </main>
 
   <footer class="rodape">
-    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
-    <p>Um caderno digital para guardar e compartilhar bons sabores.</p>
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span data-conteudo="nome_site">Organizador de Receitas</span></a>
+    <p data-conteudo="texto_rodape">Um caderno digital para guardar e compartilhar bons sabores.</p>
   </footer>
   <script src="js/script.js"></script>
 </body>

@@ -8,14 +8,14 @@
 </head>
 <body data-page="detalhes">
   <header class="topo-site">
-    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span data-conteudo="nome_site">Organizador de Receitas</span></a>
     <nav class="menu-principal" aria-label="Navegação principal">
-      <a href="index.html">Início</a>
-      <a href="minhas-receitas.html">Minhas receitas</a>
+      <a href="index.html" data-conteudo="nav_inicio">Início</a>
+      <a href="minhas-receitas.html" data-conteudo="nav_minhas">Minhas receitas</a>
     </nav>
   </header>
   <main class="pagina-conteudo">
-    <a class="voltar-link" href="index.html#receitas-publicas">← Voltar às receitas</a>
+    <a class="voltar-link" href="index.html#receitas-publicas" data-conteudo="detalhe_voltar">← Voltar às receitas</a>
     <p id="mensagem-detalhes" class="mensagem" role="status"></p>
     <article id="detalhe-receita" class="detalhe-receita" hidden>
       <div id="detalhe-foto" class="detalhe-foto"></div>
@@ -31,17 +31,17 @@
         <p class="autor-receita" id="detalhe-autor"></p>
         <div class="detalhe-colunas">
           <section>
-            <h2>Ingredientes</h2>
+            <h2 data-conteudo="detalhe_ingredientes">Ingredientes</h2>
             <ul id="detalhe-ingredientes"></ul>
           </section>
           <section>
-            <h2>Modo de preparo</h2>
+            <h2 data-conteudo="detalhe_preparo">Modo de preparo</h2>
             <ol id="detalhe-preparo"></ol>
           </section>
         </div>
         <div class="acoes-receita" id="acoes-detalhe" hidden>
-          <a class="botao-secundario-link" id="editar-detalhe" href="#">Editar receita</a>
-          <button class="botao-perigo" id="excluir-detalhe" type="button">Excluir receita</button>
+          <a class="botao-secundario-link" id="editar-detalhe" href="#" data-conteudo="detalhe_editar">Editar receita</a>
+          <button class="botao-perigo" id="excluir-detalhe" type="button" data-conteudo="detalhe_excluir">Excluir receita</button>
         </div>
       </div>
     </article>

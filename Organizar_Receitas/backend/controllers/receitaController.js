@@ -14,6 +14,18 @@ function validarId(valor) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
+function fotoReceitaValida(foto) {
+  if (/^\/uploads\/receitas\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|png|webp)$/i.test(foto)) {
+    return true;
+  }
+  try {
+    const endereco = new URL(foto);
+    return ['http:', 'https:'].includes(endereco.protocol) && Boolean(endereco.hostname);
+  } catch (erro) {
+    return false;
+  }
+}
+
 function validarDados(dados) {
   if (!dados || typeof dados !== 'object' || Array.isArray(dados)) {
     return { erro: 'Envie os dados da receita.' };
@@ -30,15 +42,7 @@ function validarDados(dados) {
   const privacidade = dados.privacidade === undefined ? 'privada' : dados.privacidade;
   const foto = typeof dados.foto === 'string' ? dados.foto.trim() : '';
 
-  const fotoValida = (() => {
-    if (!foto) return true;
-    try {
-      const endereco = new URL(foto);
-      return ['http:', 'https:'].includes(endereco.protocol) && Boolean(endereco.hostname);
-    } catch (erro) {
-      return false;
-    }
-  })();
+  const fotoValida = !foto || fotoReceitaValida(foto);
 
   if (!titulo || titulo.length > 150) {
     return { erro: 'O título é obrigatório e deve ter até 150 caracteres.' };
@@ -56,7 +60,7 @@ function validarDados(dados) {
     return { erro: 'A privacidade deve ser pública ou privada.' };
   }
   if (!fotoValida || foto.length > 255) {
-    return { erro: 'A foto deve ser um endereço HTTP ou HTTPS com até 255 caracteres.' };
+    return { erro: 'Informe um link HTTP/HTTPS válido ou selecione uma imagem enviada pelo computador.' };
   }
 
   return {

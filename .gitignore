@@ -10,6 +10,9 @@ node_modules/
 !.env.example
 !**/.env.example
 
+# Imagens enviadas pelos usuários
+Organizar_Receitas/backend/uploads/
+
 # Arquivos de sistema
 .DS_Store
 Thumbs.db
