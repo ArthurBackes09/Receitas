@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar receita | Organizador de Receitas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="form-receita">
+  <header class="topo-site">
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
+    <nav class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="minhas-receitas.html">Minhas receitas</a>
+      <button class="botao-nav botao-sair" id="botao-sair" type="button">Sair</button>
+    </nav>
+  </header>
+  <main class="pagina-conteudo pagina-formulario">
+    <div class="cabecalho-pagina">
+      <div>
+        <p class="sobretitulo">Seu caderno digital</p>
+        <h1 id="titulo-pagina-form">Uma receita para guardar</h1>
+        <p>Preencha os detalhes para deixar seu preparo organizado.</p>
+      </div>
+    </div>
+    <form id="form-receita" class="formulario formulario-receita" novalidate>
+      <fieldset>
+        <legend>Sobre a receita</legend>
+        <label>Título *
+          <input id="receita-titulo" name="titulo" type="text" maxlength="150" required placeholder="Ex.: Torta de maçã da família">
+        </label>
+        <label>Descrição
+          <textarea id="receita-descricao" name="descricao" rows="3" placeholder="Conte um pouco sobre este prato"></textarea>
+        </label>
+        <div class="campos-linha">
+          <label>Categoria *
+            <select id="receita-categoria" name="categoria_id" required><option value="">Carregando categorias...</option></select>
+          </label>
+          <label>Subcategoria
+            <select id="receita-subcategoria" name="subcategoria_id" disabled><option value="">Selecione uma categoria primeiro</option></select>
+          </label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Ingredientes e preparo</legend>
+        <label>Ingredientes *
+          <textarea id="receita-ingredientes" name="ingredientes" rows="7" required placeholder="Digite um ingrediente por linha"></textarea>
+          <span class="ajuda-campo">Separe cada ingrediente em uma linha.</span>
+        </label>
+        <label>Modo de preparo *
+          <textarea id="receita-modo-preparo" name="modo_preparo" rows="8" required placeholder="Descreva cada etapa em uma nova linha"></textarea>
+          <span class="ajuda-campo">Escreva uma etapa por linha.</span>
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Imagem e visibilidade</legend>
+        <label>Link de uma foto (opcional)
+          <input id="receita-foto" name="foto" type="url" maxlength="255" placeholder="https://exemplo.com/foto.jpg">
+          <span class="ajuda-campo">O sistema atual aceita um link HTTP/HTTPS; envio de arquivo não está configurado.</span>
+        </label>
+        <div id="previa-foto" class="previa-foto" hidden></div>
+        <label>Privacidade *
+          <select id="receita-privacidade" name="privacidade" required>
+            <option value="privada">Privada — somente você</option>
+            <option value="publica">Pública — visível para todos</option>
+          </select>
+        </label>
+      </fieldset>
+      <p id="mensagem-form-receita" class="mensagem" role="status"></p>
+      <div class="acoes-formulario">
+        <a class="botao-secundario-link" href="minhas-receitas.html">Cancelar</a>
+        <button type="submit" id="botao-salvar-receita">Salvar receita</button>
+      </div>
+    </form>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+</html>

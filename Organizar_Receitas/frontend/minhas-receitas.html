@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas receitas | Organizador de Receitas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="minhas">
+  <header class="topo-site">
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
+    <nav class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="index.html#receitas-publicas">Receitas públicas</a>
+      <button class="botao-nav botao-sair" id="botao-sair" type="button">Sair</button>
+    </nav>
+  </header>
+  <main class="pagina-conteudo">
+    <div class="cabecalho-pagina">
+      <div>
+        <p class="sobretitulo">Seu livro de cozinha</p>
+        <h1>Minhas receitas</h1>
+        <p>Gerencie suas receitas particulares e públicas.</p>
+      </div>
+      <a class="botao-principal" href="receita-form.html">＋ Cadastrar receita</a>
+    </div>
+    <div class="filtros filtros-pagina">
+      <label class="campo-pesquisa">Pesquisar
+        <input id="busca-minhas" type="search" placeholder="Nome ou descrição">
+      </label>
+      <label>Categoria
+        <select id="filtro-categoria-minhas"><option value="">Todas</option></select>
+      </label>
+      <label>Privacidade
+        <select id="filtro-privacidade"><option value="">Todas</option><option value="publica">Públicas</option><option value="privada">Privadas</option></select>
+      </label>
+    </div>
+    <p id="mensagem-minhas" class="mensagem" role="status"></p>
+    <div class="grade-receitas" id="lista-minhas"></div>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+</html>

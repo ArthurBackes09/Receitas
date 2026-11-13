@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receita | Organizador de Receitas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="detalhes">
+  <header class="topo-site">
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span>Organizador de Receitas</span></a>
+    <nav class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="minhas-receitas.html">Minhas receitas</a>
+    </nav>
+  </header>
+  <main class="pagina-conteudo">
+    <a class="voltar-link" href="index.html#receitas-publicas">← Voltar às receitas</a>
+    <p id="mensagem-detalhes" class="mensagem" role="status"></p>
+    <article id="detalhe-receita" class="detalhe-receita" hidden>
+      <div id="detalhe-foto" class="detalhe-foto"></div>
+      <div class="detalhe-conteudo">
+        <div class="detalhe-topo">
+          <div>
+            <p class="sobretitulo" id="detalhe-categoria"></p>
+            <h1 id="detalhe-titulo"></h1>
+            <p id="detalhe-descricao"></p>
+          </div>
+          <span id="detalhe-privacidade" class="etiqueta"></span>
+        </div>
+        <p class="autor-receita" id="detalhe-autor"></p>
+        <div class="detalhe-colunas">
+          <section>
+            <h2>Ingredientes</h2>
+            <ul id="detalhe-ingredientes"></ul>
+          </section>
+          <section>
+            <h2>Modo de preparo</h2>
+            <ol id="detalhe-preparo"></ol>
+          </section>
+        </div>
+        <div class="acoes-receita" id="acoes-detalhe" hidden>
+          <a class="botao-secundario-link" id="editar-detalhe" href="#">Editar receita</a>
+          <button class="botao-perigo" id="excluir-detalhe" type="button">Excluir receita</button>
+        </div>
+      </div>
+    </article>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+</html>
