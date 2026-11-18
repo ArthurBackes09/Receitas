@@ -13,6 +13,7 @@ const camposConteudoSite = [
   { grupo: 'Identidade e navegação', chave: 'nav_entrar', rotulo: 'Menu: entrar', maximo: 40 },
   { grupo: 'Identidade e navegação', chave: 'nav_minhas', rotulo: 'Menu: minhas receitas', maximo: 60 },
   { grupo: 'Identidade e navegação', chave: 'nav_admin', rotulo: 'Menu: administração', maximo: 60 },
+  { grupo: 'Identidade e navegação', chave: 'nav_videos', rotulo: 'Menu: vídeos salvos', maximo: 60 },
   { grupo: 'Identidade e navegação', chave: 'nav_nova', rotulo: 'Menu: nova receita', maximo: 60 },
   { grupo: 'Identidade e navegação', chave: 'nav_sair', rotulo: 'Menu: sair', maximo: 40 },
   { grupo: 'Início', chave: 'subtitulo', rotulo: 'Subtítulo principal', maximo: 150 },
@@ -56,6 +57,15 @@ const camposConteudoSite = [
   { grupo: 'Detalhes da receita', chave: 'detalhe_preparo', rotulo: 'Título do preparo', maximo: 60 },
   { grupo: 'Detalhes da receita', chave: 'detalhe_editar', rotulo: 'Botão editar', maximo: 60 },
   { grupo: 'Detalhes da receita', chave: 'detalhe_excluir', rotulo: 'Botão excluir', maximo: 60 },
+  { grupo: 'Vídeos salvos', chave: 'videos_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
+  { grupo: 'Vídeos salvos', chave: 'videos_titulo', rotulo: 'Título da página', maximo: 120 },
+  { grupo: 'Vídeos salvos', chave: 'videos_descricao', rotulo: 'Descrição da página', maximo: 250, tipo: 'textarea' },
+  { grupo: 'Vídeos salvos', chave: 'videos_form_titulo', rotulo: 'Título do formulário', maximo: 100 },
+  { grupo: 'Vídeos salvos', chave: 'videos_form_editar', rotulo: 'Título ao editar vídeo', maximo: 100 },
+  { grupo: 'Vídeos salvos', chave: 'videos_lista_titulo', rotulo: 'Título da coleção', maximo: 100 },
+  { grupo: 'Vídeos salvos', chave: 'videos_salvar', rotulo: 'Botão salvar vídeo', maximo: 60 },
+  { grupo: 'Vídeos salvos', chave: 'videos_alterar', rotulo: 'Botão salvar edição', maximo: 60 },
+  { grupo: 'Vídeos salvos', chave: 'videos_cancelar', rotulo: 'Botão cancelar edição', maximo: 60 },
   { grupo: 'Administração', chave: 'admin_subtitulo', rotulo: 'Subtítulo', maximo: 100 },
   { grupo: 'Administração', chave: 'admin_titulo', rotulo: 'Título', maximo: 120 },
   { grupo: 'Administração', chave: 'admin_descricao', rotulo: 'Descrição', maximo: 250, tipo: 'textarea' },
@@ -401,6 +411,202 @@ async function carregarMinhasReceitas() {
   }
 }
 
+function criarCartaoVideo(video) {
+  const cartao = document.createElement('article');
+  cartao.className = 'cartao-video';
+
+  const cabecalho = document.createElement('div');
+  cabecalho.className = 'metadados-receita';
+  const categoria = document.createElement('span');
+  categoria.textContent = video.subcategoria
+    ? `${video.categoria} · ${video.subcategoria}`
+    : video.categoria;
+  cabecalho.append(categoria);
+
+  const titulo = document.createElement('h3');
+  titulo.textContent = video.titulo;
+  const descricao = document.createElement('p');
+  descricao.className = 'descricao-cartao';
+  descricao.textContent = video.descricao || 'Vídeo salvo para assistir mais tarde.';
+
+  const acoes = document.createElement('div');
+  acoes.className = 'acoes-cartao';
+  let urlValida = null;
+  try {
+    const url = new URL(video.url_video);
+    if (['http:', 'https:'].includes(url.protocol)) urlValida = url.href;
+  } catch (erro) {
+    urlValida = null;
+  }
+
+  if (urlValida) {
+    const abrir = document.createElement('a');
+    abrir.className = 'botao-pequeno';
+    abrir.href = urlValida;
+    abrir.target = '_blank';
+    abrir.rel = 'noopener noreferrer';
+    abrir.textContent = 'Assistir vídeo';
+    acoes.append(abrir);
+  }
+
+  const editar = document.createElement('button');
+  editar.type = 'button';
+  editar.className = 'botao-pequeno botao-contorno';
+  editar.textContent = 'Editar';
+  editar.addEventListener('click', async () => {
+    const categoriaSelect = document.querySelector('#video-categoria');
+    document.querySelector('#video-titulo').value = video.titulo;
+    document.querySelector('#video-url').value = video.url_video;
+    document.querySelector('#video-descricao').value = video.descricao || '';
+    categoriaSelect.value = String(video.categoria_id);
+    try {
+      await carregarSubcategorias(video.categoria_id, video.subcategoria_id, '#video-subcategoria');
+      document.querySelector('#form-video').dataset.videoId = String(video.id);
+      document.querySelector('#titulo-form-video').textContent = textoConfiguravel('videos_form_editar', 'Editar vídeo salvo');
+      document.querySelector('#botao-salvar-video').textContent = textoConfiguravel('videos_alterar', 'Salvar alterações');
+      document.querySelector('#botao-cancelar-video').hidden = false;
+      document.querySelector('#form-video').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (erro) {
+      mostrarMensagem(document.querySelector('#mensagem-videos'), erro.message, 'erro');
+    }
+  });
+
+  const excluir = document.createElement('button');
+  excluir.type = 'button';
+  excluir.className = 'botao-pequeno botao-perigo';
+  excluir.textContent = 'Remover';
+  excluir.addEventListener('click', async () => {
+    if (!window.confirm(`Remover "${video.titulo}" dos vídeos salvos?`)) return;
+    try {
+      const resultado = await requisitar(`/api/videos/${encodeURIComponent(video.id)}`, { method: 'DELETE' });
+      mostrarMensagem(document.querySelector('#mensagem-videos'), resultado.mensagem, 'sucesso');
+      await carregarMeusVideos();
+    } catch (erro) {
+      mostrarMensagem(document.querySelector('#mensagem-videos'), erro.message, 'erro');
+    }
+  });
+  acoes.append(editar, excluir);
+  cartao.append(cabecalho, titulo, descricao, acoes);
+  return cartao;
+}
+
+async function carregarMeusVideos() {
+  const container = document.querySelector('#lista-videos');
+  if (!container) return;
+  const mensagem = document.querySelector('#mensagem-videos');
+  const parametros = new URLSearchParams();
+  const busca = document.querySelector('#busca-videos').value.trim();
+  const categoria = document.querySelector('#filtro-categoria-videos').value;
+  if (busca) parametros.set('busca', busca);
+  if (categoria) parametros.set('categoria', categoria);
+
+  mostrarMensagem(mensagem, 'Carregando seus vídeos...');
+  try {
+    const resultado = await requisitar(`/api/videos/minhas?${parametros}`);
+    const videos = resultado.videos || [];
+    container.replaceChildren();
+    if (videos.length === 0) {
+      const vazio = document.createElement('div');
+      vazio.className = 'estado-vazio';
+      const titulo = document.createElement('h3');
+      titulo.textContent = 'Nenhum vídeo encontrado';
+      const texto = document.createElement('p');
+      texto.textContent = busca || categoria
+        ? 'Tente ajustar os filtros.'
+        : 'Salve um link de vídeo para encontrá-lo aqui quando quiser cozinhar.';
+      vazio.append(titulo, texto);
+      container.append(vazio);
+    } else {
+      videos.forEach((video) => container.append(criarCartaoVideo(video)));
+    }
+    mostrarMensagem(mensagem, '');
+  } catch (erro) {
+    mostrarMensagem(mensagem, erro.message, 'erro');
+    if (erro.status === 401 && tokenAtual()) encerrarSessao();
+  }
+}
+
+async function inicializarMeusVideos() {
+  const form = document.querySelector('#form-video');
+  const categoria = document.querySelector('#video-categoria');
+  const subcategoria = document.querySelector('#video-subcategoria');
+  const mensagem = document.querySelector('#mensagem-form-video');
+  const cancelar = document.querySelector('#botao-cancelar-video');
+
+  try {
+    await carregarCategorias([categoria, document.querySelector('#filtro-categoria-videos')]);
+    await carregarMeusVideos();
+  } catch (erro) {
+    mostrarMensagem(document.querySelector('#mensagem-videos'), erro.message, 'erro');
+  }
+
+  document.querySelector('#busca-videos').addEventListener('input', carregarMeusVideos);
+  document.querySelector('#filtro-categoria-videos').addEventListener('change', carregarMeusVideos);
+  categoria.addEventListener('change', () => {
+    carregarSubcategorias(categoria.value, null, '#video-subcategoria').catch((erro) => {
+      mostrarMensagem(mensagem, erro.message, 'erro');
+    });
+  });
+
+  cancelar.addEventListener('click', () => {
+    form.reset();
+    delete form.dataset.videoId;
+    subcategoria.replaceChildren(new Option('Selecione uma categoria primeiro', ''));
+    subcategoria.disabled = true;
+    document.querySelector('#titulo-form-video').textContent = textoConfiguravel('videos_form_titulo', 'Salvar um vídeo');
+    document.querySelector('#botao-salvar-video').textContent = textoConfiguravel('videos_salvar', 'Salvar vídeo');
+    cancelar.textContent = textoConfiguravel('videos_cancelar', 'Cancelar edição');
+    cancelar.hidden = true;
+    mostrarMensagem(mensagem, '');
+  });
+
+  form.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const urlVideo = document.querySelector('#video-url').value.trim();
+    try {
+      const url = new URL(urlVideo);
+      if (!['http:', 'https:'].includes(url.protocol) || !url.hostname) {
+        throw new Error('Use um link HTTP ou HTTPS válido.');
+      }
+    } catch (erro) {
+      mostrarMensagem(mensagem, erro.message || 'Informe um link HTTP ou HTTPS válido.', 'erro');
+      return;
+    }
+
+    const id = form.dataset.videoId;
+    const botaoSalvar = document.querySelector('#botao-salvar-video');
+    botaoSalvar.disabled = true;
+    try {
+      const resultado = await requisitar(
+        id ? `/api/videos/${encodeURIComponent(id)}` : '/api/videos',
+        {
+          method: id ? 'PUT' : 'POST',
+          body: {
+            titulo: document.querySelector('#video-titulo').value.trim(),
+            descricao: document.querySelector('#video-descricao').value.trim(),
+            url_video: urlVideo,
+            categoria_id: categoria.value,
+            subcategoria_id: subcategoria.value || null
+          }
+        }
+      );
+      cancelar.click();
+      mostrarMensagem(mensagem, resultado.mensagem, 'sucesso');
+      await carregarMeusVideos();
+    } catch (erro) {
+      mostrarMensagem(mensagem, erro.message, 'erro');
+    } finally {
+      botaoSalvar.disabled = false;
+      botaoSalvar.textContent = textoConfiguravel(
+        form.dataset.videoId ? 'videos_alterar' : 'videos_salvar',
+        form.dataset.videoId ? 'Salvar alterações' : 'Salvar vídeo'
+      );
+    }
+  });
+}
+
 function encerrarSessao() {
   localStorage.removeItem('tokenReceitas');
   localStorage.removeItem('usuarioReceitas');
@@ -417,6 +623,7 @@ function atualizarInterfaceAutenticada(usuario) {
   const entrar = document.querySelector('#link-entrar');
   const heroEntrar = document.querySelector('#hero-entrar');
   const minhas = document.querySelector('#link-minhas');
+  const videos = document.querySelector('#link-videos');
   const nova = document.querySelector('#link-nova');
   const sair = document.querySelector('#botao-sair');
   const admin = document.querySelector('#painel-admin');
@@ -427,6 +634,7 @@ function atualizarInterfaceAutenticada(usuario) {
   if (entrar) entrar.hidden = Boolean(usuario);
   if (heroEntrar) heroEntrar.hidden = Boolean(usuario);
   if (minhas) minhas.hidden = !usuario;
+  if (videos) videos.hidden = !usuario;
   if (nova) nova.hidden = !usuario;
   if (sair) sair.hidden = !usuario;
   if (admin) admin.hidden = !usuario || usuario.nivel !== 'administrador';
@@ -439,7 +647,7 @@ async function inicializarSessao() {
   const sair = document.querySelector('#botao-sair');
   if (sair) sair.addEventListener('click', encerrarSessao);
   if (!tokenAtual()) {
-    if (['minhas', 'form-receita', 'admin'].includes(document.body.dataset.page)) encerrarSessao();
+    if (['minhas', 'form-receita', 'admin', 'videos'].includes(document.body.dataset.page)) encerrarSessao();
     return;
   }
 
@@ -447,7 +655,7 @@ async function inicializarSessao() {
     const resultado = await requisitar('/api/usuarios/eu');
     localStorage.setItem('usuarioReceitas', JSON.stringify(resultado.usuario));
     atualizarInterfaceAutenticada(resultado.usuario);
-    if (document.body.dataset.page !== 'admin') await carregarMinhasReceitas();
+    if (!['admin', 'videos'].includes(document.body.dataset.page)) await carregarMinhasReceitas();
   } catch (erro) {
     encerrarSessao();
   }
@@ -550,8 +758,8 @@ async function inicializarListaMinhas() {
   await carregarMinhasReceitas();
 }
 
-async function carregarSubcategorias(categoriaId, selecionarId) {
-  const select = document.querySelector('#receita-subcategoria');
+async function carregarSubcategorias(categoriaId, selecionarId, seletor = '#receita-subcategoria') {
+  const select = document.querySelector(seletor);
   if (!select) return;
   select.replaceChildren(new Option(categoriaId ? 'Nenhuma subcategoria' : 'Selecione uma categoria primeiro', ''));
   select.disabled = !categoriaId;
@@ -1072,7 +1280,7 @@ async function inicializar() {
   await inicializarSessao();
 
   const pagina = document.body.dataset.page;
-  if (['minhas', 'form-receita', 'admin'].includes(pagina) && !tokenAtual()) return;
+  if (['minhas', 'form-receita', 'admin', 'videos'].includes(pagina) && !tokenAtual()) return;
   try {
     await carregarConfiguracoesSite();
   } catch (erro) {
@@ -1101,6 +1309,8 @@ async function inicializar() {
     } catch (erro) {
       mostrarMensagem(document.querySelector('#mensagem-minhas'), erro.message, 'erro');
     }
+  } else if (pagina === 'videos') {
+    await inicializarMeusVideos();
   } else if (pagina === 'form-receita') {
     await inicializarFormularioReceita();
   } else if (pagina === 'detalhes') {

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus vídeos | Organizador de Receitas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="videos">
+  <header class="topo-site">
+    <a class="marca" href="index.html"><span class="marca-icone" aria-hidden="true">OR</span><span data-conteudo="nome_site">Organizador de Receitas</span></a>
+    <nav class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html" data-conteudo="nav_inicio">Início</a>
+      <a href="minhas-receitas.html" data-conteudo="nav_minhas">Minhas receitas</a>
+      <button class="botao-nav botao-sair" id="botao-sair" data-conteudo="nav_sair" type="button">Sair</button>
+    </nav>
+  </header>
+  <main class="pagina-conteudo">
+    <div class="cabecalho-pagina">
+      <div>
+        <p class="sobretitulo" data-conteudo="videos_subtitulo">Sua coleção pessoal</p>
+        <h1 data-conteudo="videos_titulo">Vídeos de receitas salvos</h1>
+        <p data-conteudo="videos_descricao">Guarde links de vídeos e encontre-os novamente quando quiser cozinhar.</p>
+      </div>
+    </div>
+
+    <section class="painel-admin-secao" aria-labelledby="titulo-form-video">
+      <h2 id="titulo-form-video" data-conteudo="videos_form_titulo">Salvar um vídeo</h2>
+      <form id="form-video" class="formulario formulario-video" novalidate>
+        <label>Título *
+          <input id="video-titulo" type="text" maxlength="150" required placeholder="Ex.: Pão de queijo fácil">
+        </label>
+        <label>Link do vídeo *
+          <input id="video-url" type="url" maxlength="500" required placeholder="https://www.youtube.com/watch?v=...">
+          <span class="ajuda-campo">Cole o link do YouTube, TikTok, Instagram ou outra plataforma.</span>
+        </label>
+        <label>Descrição
+          <textarea id="video-descricao" rows="3" placeholder="Uma observação para lembrar depois"></textarea>
+        </label>
+        <div class="campos-linha">
+          <label>Categoria *
+            <select id="video-categoria" required><option value="">Carregando categorias...</option></select>
+          </label>
+          <label>Subcategoria
+            <select id="video-subcategoria" disabled><option value="">Selecione uma categoria primeiro</option></select>
+          </label>
+        </div>
+        <p id="mensagem-form-video" class="mensagem" role="status" aria-live="polite"></p>
+        <div class="acoes-formulario">
+          <button id="botao-cancelar-video" class="botao-secundario-link" data-conteudo="videos_cancelar" type="button" hidden>Cancelar edição</button>
+          <button id="botao-salvar-video" data-conteudo="videos_salvar" type="submit">Salvar vídeo</button>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="titulo-lista-videos">
+      <div class="cabecalho-secao cabecalho-com-filtro">
+        <div>
+          <p class="sobretitulo">Sua coleção</p>
+          <h2 id="titulo-lista-videos" data-conteudo="videos_lista_titulo">Meus vídeos salvos</h2>
+        </div>
+        <div class="filtros">
+          <label class="campo-pesquisa">Pesquisar
+            <input id="busca-videos" type="search" placeholder="Título ou descrição">
+          </label>
+          <label>Categoria
+            <select id="filtro-categoria-videos"><option value="">Todas</option></select>
+          </label>
+        </div>
+      </div>
+      <p id="mensagem-videos" class="mensagem" role="status" aria-live="polite"></p>
+      <div id="lista-videos" class="grade-videos"></div>
+    </section>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+</html>

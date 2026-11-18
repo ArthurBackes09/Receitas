@@ -281,7 +281,7 @@ textarea { min-height: auto; resize: vertical; line-height: 1.55; }
 input::placeholder, textarea::placeholder { color: #9BA69D; }
 input:focus, select:focus, textarea:focus { border-color: var(--verde-natural); box-shadow: 0 0 0 3px rgba(111, 150, 111, 0.16); }
 
-.grade-receitas {
+.grade-receitas, .grade-videos {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
@@ -299,6 +299,20 @@ input:focus, select:focus, textarea:focus { border-color: var(--verde-natural); 
 }
 
 .cartao-receita:hover { transform: translateY(-4px); box-shadow: var(--sombra); }
+.cartao-video {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(49, 92, 59, 0.08);
+  border-radius: 20px;
+  background: var(--branco);
+  box-shadow: 0 10px 28px rgba(38, 53, 42, 0.06);
+  animation: entrar 350ms ease both;
+}
+.cartao-video h3 { margin: 12px 0 8px; color: var(--verde-escuro); font-family: Georgia, "Times New Roman", serif; font-size: 1.3rem; overflow-wrap: anywhere; }
+.cartao-video .descricao-cartao { margin-bottom: 12px; }
+.cartao-video .acoes-cartao { align-items: center; }
+.formulario-video { max-width: 760px; }
+.formulario-video .acoes-formulario { align-items: center; }
 .imagem-receita { height: 205px; overflow: hidden; background: linear-gradient(135deg, var(--verde-claro), #f3ead7); }
 .imagem-receita img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .cartao-receita-conteudo { padding: 18px; }
@@ -494,7 +508,7 @@ button[type="submit"]:focus-visible,
   .menu-principal a { font-size: 0.84rem; }
   .hero { min-height: 400px; grid-template-columns: 1fr 0.85fr; }
   .hero-foto { min-height: 320px; }
-  .grade-receitas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grade-receitas, .grade-videos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .painel-login { grid-template-columns: minmax(0, 1fr) minmax(260px, 42%); }
 }
 
@@ -512,7 +526,7 @@ button[type="submit"]:focus-visible,
   .cabecalho-com-filtro { align-items: stretch; }
   .filtros { display: grid; grid-template-columns: 1fr; width: 100%; }
   .filtros input, .filtros select, .filtros .campo-pesquisa input { min-width: 0; }
-  .grade-receitas { grid-template-columns: 1fr; gap: 16px; }
+  .grade-receitas, .grade-videos { grid-template-columns: 1fr; gap: 16px; }
   .imagem-receita { height: 220px; }
   .painel-usuario { padding: 22px 18px; }
   .painel-atalhos { justify-content: flex-start; }

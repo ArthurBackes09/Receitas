@@ -4,25 +4,29 @@ const conexao = require('../database/conexao');
 
 async function cadastrar(req, res) {
   try {
-    const { nome, email, senha } = req.body;
+    const body = req.body;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return res.status(400).json({ mensagem: 'Envie nome, email e senha.' });
+    }
+    const { nome, email, senha } = body;
 
-    if (!nome || !email || !senha) {
+    if (typeof nome !== 'string' || typeof email !== 'string' || typeof senha !== 'string') {
       return res.status(400).json({ mensagem: 'Nome, email e senha são obrigatórios.' });
     }
 
-    const nomeNormalizado = String(nome).trim();
-    const emailNormalizado = String(email).trim().toLowerCase();
+    const nomeNormalizado = nome.trim();
+    const emailNormalizado = email.trim().toLowerCase();
 
-    if (nomeNormalizado.length < 2) {
-      return res.status(400).json({ mensagem: 'O nome deve ter pelo menos 2 caracteres.' });
+    if (nomeNormalizado.length < 2 || nomeNormalizado.length > 100) {
+      return res.status(400).json({ mensagem: 'O nome deve ter entre 2 e 100 caracteres.' });
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado)) {
+    if (emailNormalizado.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado)) {
       return res.status(400).json({ mensagem: 'Informe um email válido.' });
     }
 
-    if (typeof senha !== 'string' || senha.length < 6) {
-      return res.status(400).json({ mensagem: 'A senha deve ter pelo menos 6 caracteres.' });
+    if (senha.length < 6 || Buffer.byteLength(senha, 'utf8') > 72) {
+      return res.status(400).json({ mensagem: 'A senha deve ter pelo menos 6 caracteres e no máximo 72 bytes.' });
     }
 
     const [usuarios] = await conexao.execute('SELECT id FROM usuarios WHERE email = ?', [emailNormalizado]);
@@ -42,6 +46,9 @@ async function cadastrar(req, res) {
       usuario: { id: resultado.insertId, nome: nomeNormalizado, email: emailNormalizado, nivel: 'comum' }
     });
   } catch (erro) {
+    if (erro.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ mensagem: 'Este email já está cadastrado.' });
+    }
     console.error('Erro ao cadastrar usuário:', erro);
     return res.status(500).json({ mensagem: 'Erro interno ao cadastrar usuário.' });
   }
@@ -49,15 +56,22 @@ async function cadastrar(req, res) {
 
 async function login(req, res) {
   try {
-    const { email, senha } = req.body;
+    const body = req.body;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return res.status(400).json({ mensagem: 'Email e senha são obrigatórios.' });
+    }
+    const { email, senha } = body;
 
-    if (!email || !senha) {
+    if (typeof email !== 'string' || typeof senha !== 'string' || !email || !senha) {
       return res.status(400).json({ mensagem: 'Email e senha são obrigatórios.' });
     }
 
-    const emailNormalizado = String(email).trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado)) {
+    const emailNormalizado = email.trim().toLowerCase();
+    if (emailNormalizado.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado)) {
       return res.status(400).json({ mensagem: 'Informe um email válido.' });
+    }
+    if (Buffer.byteLength(senha, 'utf8') > 72) {
+      return res.status(400).json({ mensagem: 'A senha excede o limite permitido.' });
     }
     const [usuarios] = await conexao.execute(
       'SELECT id, nome, email, senha, nivel FROM usuarios WHERE email = ?',

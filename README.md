@@ -1,6 +1,9 @@
 # Organizador de Receitas
 
-Aplicação web para cadastrar e organizar receitas próprias, controlar sua privacidade e descobrir receitas compartilhadas publicamente.
+Site para pessoas que querem reunir receitas próprias e guardar links de vídeos culinários encontrados online. Receitas e vídeos ficam em áreas separadas, organizados por categoria.
+
+## Problema e solução
+Receitas pessoais costumam ficar espalhadas em cadernos e aplicativos, enquanto vídeos encontrados em redes sociais são difíceis de localizar outra vez. O Organizador de Receitas oferece um caderno digital privado, receitas que podem ser compartilhadas publicamente e uma coleção pessoal de links de vídeos.
 
 ## Tecnologias
 - HTML5, CSS e JavaScript.
@@ -27,6 +30,7 @@ Receitas/
     │   ├── css/style.css
     │   ├── js/script.js
     │   ├── index.html
+    │   ├── meus-videos.html
     │   ├── admin.html
     │   ├── cadastro.html
     │   ├── minhas-receitas.html
@@ -73,15 +77,32 @@ Receitas/
 
    O Go Live serve apenas o frontend. Para que login, categorias e receitas funcionem, mantenha `node server.js` rodando no terminal da pasta `Organizar_Receitas/backend`.
 
+## Banco de dados
+Execute `Organizar_Receitas/sql/banco.sql`. O script cria o banco `organizar_receitas`, as tabelas e as categorias iniciais.
+
+- `usuarios` armazena as contas e seus níveis de acesso.
+- `categorias` e `subcategorias` organizam receitas e vídeos; cada subcategoria pertence a uma categoria.
+- `receitas.usuario_id` e `videos_salvos.usuario_id` identificam a conta proprietária.
+- `receitas` armazena ingredientes, preparo, imagem e privacidade.
+- `videos_salvos` armazena título, descrição, URL e categoria do vídeo.
+- `configuracoes_site` guarda os textos e as URLs de imagem editáveis pela administração.
+
 ## Páginas
 - `index.html`: página inicial, categorias, receitas públicas, login e painel pessoal.
 - `admin.html`: área restrita para administrar receitas, níveis de usuário, categorias e textos e imagens de todas as páginas, sem alterar o layout ou as funcionalidades.
 - `cadastro.html`: cadastro de usuário.
 - `minhas-receitas.html`: consulta, filtros, edição e exclusão das receitas do usuário.
+- `meus-videos.html`: cadastro, consulta, filtros, edição, abertura e remoção dos links de vídeos salvos.
 - `receita-form.html`: cadastro e edição de receita.
 - `receita-detalhes.html`: detalhes, ingredientes e etapas de preparo.
 
 ## API
+
+### Acesso e níveis
+- Visitantes podem consultar categorias, ver receitas públicas, criar uma conta e entrar.
+- Usuários `comum` podem manter suas próprias receitas, salvar vídeos e editar ou remover apenas o próprio conteúdo.
+- Usuários `administrador` podem gerenciar receitas, contas, categorias e conteúdo textual/visual configurável do site.
+- Senhas são armazenadas com bcrypt; as rotas privadas usam JWT e verificam as permissões no backend.
 
 ### Usuários
 | Método | Caminho | Acesso | Descrição |
@@ -115,6 +136,14 @@ Receitas/
 | POST | `/api/receitas` | Autenticado | Cadastra receita para o usuário do token |
 | PUT | `/api/receitas/:id` | Proprietário ou administrador | Atualiza receita própria ou de qualquer usuário |
 | DELETE | `/api/receitas/:id` | Proprietário ou administrador | Exclui receita própria ou de qualquer usuário |
+
+### Vídeos salvos
+| Método | Caminho | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/api/videos/minhas` | Autenticado | Lista vídeos do usuário atual; aceita `busca` e `categoria` |
+| POST | `/api/videos` | Autenticado | Salva um link de vídeo para o usuário atual |
+| PUT | `/api/videos/:id` | Proprietário | Edita um vídeo próprio |
+| DELETE | `/api/videos/:id` | Proprietário | Remove um vídeo da coleção própria |
 
 ### Imagens e conteúdo do site
 | Método | Caminho | Acesso | Descrição |
@@ -150,7 +179,8 @@ Filtros opcionais de listagem:
 - Fotos novas de receitas devem usar links diretos HTTP/HTTPS; links de busca ou páginas de publicação não são imagens diretas.
 - A pasta `Organizar_Receitas/backend/uploads/` é mantida para exibir fotos enviadas antes da remoção do upload local e continua ignorada pelo Git.
 - Ingredientes e modo de preparo podem ser escritos um por linha; os detalhes mostram listas e etapas.
-- Vídeos salvos já possuem modelagem no banco, mas o CRUD de vídeos não faz parte desta entrega.
+- Vídeos aceitam links HTTP/HTTPS, títulos e descrições, são organizados por categoria e ficam visíveis apenas para a conta que os salvou.
+- Os links abrem na plataforma de origem; o site não baixa nem incorpora o vídeo.
 
 ## Testes manuais sugeridos
 1. Cadastre duas contas e faça login para obter tokens diferentes.
@@ -165,6 +195,8 @@ Filtros opcionais de listagem:
 10. Tente excluir uma categoria que esteja em uso e confirme a resposta `409`; tente remover seu próprio perfil administrativo e confirme a recusa.
 11. Acesse `/api/health` para verificar a conexão com o MySQL.
 12. Informe um link direto HTTP/HTTPS para a foto de uma receita e para as imagens configuráveis; confirme a prévia e salve as alterações. A seleção de arquivos locais não está disponível.
+13. Salve um link de vídeo, filtre por categoria e pesquisa, edite o título e a descrição, abra o link e remova o vídeo.
+14. Com outra conta, confirme que os vídeos da primeira não aparecem e que a edição ou remoção desses vídeos retorna `404`.
 
 ## Segurança e validações
 - Senhas protegidas com hash bcrypt.
