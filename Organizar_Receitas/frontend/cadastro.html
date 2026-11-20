@@ -3,44 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Crie sua conta no Organizador de Receitas.">
   <title>Criar conta | Organizador de Receitas</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-page="cadastro">
   <header class="topo-site">
-    <a class="marca" href="index.html" aria-label="Página inicial do Organizador de Receitas">
+    <a class="marca" href="index.html">
       <span class="marca-icone" aria-hidden="true">OR</span>
       <span data-conteudo="nome_site">Organizador de Receitas</span>
     </a>
+    <nav class="menu-principal" aria-label="Navegação principal">
+      <a href="index.html#acesso-conta" data-conteudo="nav_entrar">Entrar</a>
+    </nav>
   </header>
+
   <main>
-    <section class="area-conta cadastro" id="conta">
+    <section class="area-conta">
       <div class="painel-login">
         <div class="boas-vindas">
-          <p class="subtitulo" data-conteudo="cadastro_subtitulo">Comece agora</p>
+          <p class="sobretitulo" data-conteudo="cadastro_subtitulo">Comece agora</p>
           <h1 data-conteudo="cadastro_titulo">Crie seu caderno de receitas.</h1>
           <p data-conteudo="cadastro_descricao">Cadastre suas receitas e mantenha tudo organizado em um só lugar.</p>
         </div>
+        <figure class="painel-ilustracao">
+          <img
+            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&amp;fit=crop&amp;w=1000&amp;q=85"
+            alt="Mesa com pratos preparados"
+            data-conteudo-src="foto_cadastro">
+        </figure>
         <div class="formulario-conta">
-          <form id="form-cadastro">
+          <form id="form-cadastro" class="formulario">
             <h2 data-conteudo="cadastro_form_titulo">Criar sua conta</h2>
-            <label>Nome<input type="text" id="cadastro-nome" required maxlength="100" autocomplete="name" placeholder="Seu nome"></label>
-            <label>Email<input type="email" id="cadastro-email" required maxlength="150" autocomplete="email" placeholder="seuemail@email.com"></label>
-            <label>Senha<input type="password" id="cadastro-senha" required minlength="6" autocomplete="new-password" placeholder="Mínimo de 6 caracteres"></label>
-            <label>Confirmar senha<input type="password" id="cadastro-confirmar-senha" required minlength="6" autocomplete="new-password" placeholder="Digite a senha novamente"></label>
-            <button type="submit" data-conteudo="cadastro_botao">Cadastrar</button>
+            <label>Nome
+              <input type="text" id="cadastro-nome" required minlength="2" maxlength="100" autocomplete="name">
+            </label>
+            <label>E-mail
+              <input type="email" id="cadastro-email" required maxlength="150" autocomplete="email">
+            </label>
+            <label>Senha
+              <input type="password" id="cadastro-senha" required minlength="6" autocomplete="new-password">
+            </label>
+            <label>Confirmar senha
+              <input type="password" id="cadastro-confirmar-senha" required minlength="6" autocomplete="new-password">
+            </label>
+            <button type="submit" class="botao-principal" data-conteudo="cadastro_botao">Cadastrar</button>
             <p class="troca-formulario" data-conteudo="cadastro_login_prompt">Já possui uma conta?</p>
-            <a class="botao-secundario" href="index.html" data-conteudo="cadastro_login_link">Voltar para o login</a>
-            <p id="mensagem-cadastro" role="status"></p>
+            <a class="botao-secundario" href="index.html#acesso-conta" data-conteudo="cadastro_login_link">Voltar para o login</a>
+            <p id="mensagem-cadastro" class="mensagem" role="status"></p>
           </form>
         </div>
-        <aside class="painel-ilustracao" aria-label="Receitas caseiras">
-          <img id="foto-cadastro" data-conteudo-src="foto_cadastro" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" alt="Prato caseiro servido à mesa">
-        </aside>
       </div>
     </section>
   </main>
 
+  <footer class="rodape">
+    <a class="marca" href="index.html">Organizador de Receitas</a>
+    <p data-conteudo="texto_rodape">Um caderno digital para guardar e compartilhar bons sabores.</p>
+  </footer>
   <script src="js/script.js"></script>
 </body>
 </html>

@@ -1,68 +1,70 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const express = require('express');
-const path = require('path');
 const conexao = require('./database/conexao');
+const corsMiddleware = require('./middlewares/corsMiddleware');
 const usuarioRoutes = require('./routes/usuarioRoutes');
-const categoriaRoutes = require('./routes/categoriaRoutes');
 const receitaRoutes = require('./routes/receitaRoutes');
+const categoriaRoutes = require('./routes/categoriaRoutes');
 const videoRoutes = require('./routes/videoRoutes');
 const configuracaoRoutes = require('./routes/configuracaoRoutes');
-const corsMiddleware = require('./middlewares/corsMiddleware');
 
 const app = express();
-const porta = process.env.PORT || 3000;
+const porta = Number(process.env.PORT || 3000);
 
 app.use(corsMiddleware);
 app.use(express.json({ limit: '1mb' }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { dotfiles: 'deny', index: false }));
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
-app.get('/api/health', async (req, res) => {
+app.get('/api/health', async (req, res, next) => {
   try {
     await conexao.query('SELECT 1');
     return res.json({ status: 'online', banco: 'conectado' });
   } catch (erro) {
-    console.error('Erro ao verificar a conexão com o banco:', erro);
-    return res.status(500).json({ status: 'online', banco: 'erro de conexão' });
+    return next(erro);
   }
 });
 
 app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/categorias', categoriaRoutes);
 app.use('/api/receitas', receitaRoutes);
+app.use('/api/categorias', categoriaRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/configuracoes', configuracaoRoutes);
 
+app.use('/api', (req, res) => {
+  return res.status(404).json({ mensagem: 'Rota da API não encontrada.' });
+});
+
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
+
 app.use((erro, req, res, next) => {
   if (res.headersSent) return next(erro);
-  const status = Number.isInteger(erro.status) && erro.status >= 400 && erro.status < 600
+  console.error('Erro ao processar requisição:', erro);
+  const status = Number.isInteger(erro.status) && erro.status >= 400 && erro.status < 500
     ? erro.status
     : 500;
-  if (status >= 500) console.error('Erro não tratado na API:', erro);
-  return res.status(status).json({
-    mensagem: status === 400
-      ? 'A requisição contém dados inválidos.'
-      : status === 413
-        ? 'A requisição excede o limite permitido.'
-        : 'Erro interno do servidor.'
-  });
+  const mensagem = status === 400
+    ? 'O corpo da requisição não contém JSON válido.'
+    : 'Erro interno no servidor.';
+  return res.status(status).json({ mensagem });
 });
 
-if (!process.env.JWT_SECRET) {
-  console.warn('Aviso: JWT_SECRET não foi configurado no arquivo .env.');
-}
-
-const servidor = app.listen(porta, () => {
-  console.log(`Servidor rodando em http://localhost:${porta}`);
-});
-
-servidor.on('error', (erro) => {
-  if (erro.code === 'EADDRINUSE') {
-    console.error(`Erro: a porta ${porta} já está sendo utilizada por outro servidor.`);
-    console.error(`Acesse http://localhost:${porta} ou encerre o servidor existente antes de iniciar outro.`);
-    return;
+if (require.main === module) {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('Configure JWT_SECRET no arquivo .env antes de iniciar o servidor.');
   }
 
-  console.error('Erro ao iniciar o servidor:', erro.message);
-});
+  const servidor = app.listen(porta, () => {
+    console.log(`Servidor rodando em http://localhost:${porta}`);
+  });
+  servidor.on('error', (erro) => {
+    if (erro.code === 'EADDRINUSE') {
+      console.error(`A porta ${porta} já está ocupada. Feche o servidor existente antes de iniciar outro.`);
+      return;
+    }
+    console.error('Erro ao iniciar o servidor:', erro);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = app;

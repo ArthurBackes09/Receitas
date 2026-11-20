@@ -8,8 +8,13 @@ const router = express.Router();
 router.post('/cadastrar', usuarioController.cadastrar);
 router.post('/login', usuarioController.login);
 router.get('/eu', autenticacao, usuarioController.dadosAutenticado);
-router.get('/admin/usuarios', autenticacao, autorizacao('administrador'), usuarioController.listarUsuariosAdmin);
-router.put('/admin/usuarios/:id/nivel', autenticacao, autorizacao('administrador'), usuarioController.alterarNivelAdmin);
 router.get('/admin', autenticacao, autorizacao('administrador'), usuarioController.dadosAdmin);
+router.get('/admin/usuarios', autenticacao, autorizacao('administrador'), usuarioController.listarUsuariosAdmin);
+router.put(
+  '/admin/usuarios/:id/nivel',
+  autenticacao,
+  autorizacao('administrador'),
+  usuarioController.atualizarNivelAdmin
+);
 
 module.exports = router;

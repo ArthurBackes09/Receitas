@@ -2,12 +2,11 @@
   "name": "organizador-de-receitas",
   "version": "1.0.0",
   "private": true,
-  "description": "Organizador de Receitas - Entrega 2",
+  "description": "Aplicação web para organizar receitas e links culinários",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "node backend/server.js",
-    "test": "node --test"
+    "test": "node --test backend/tests/usuarioController.test.js backend/tests/videoController.test.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
